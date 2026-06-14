@@ -203,36 +203,36 @@ const Footer = () => {
 						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
 							<img src="/img/footer/inquiry.png" alt="Inquiry Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
-						<div className="info">
-							<h1>{t('Having queries?')}</h1>
-							<p>{t('Feel free to reach out to us via Chat in our website')}</p>
+						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
+							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Having queries?')}</h1>
+							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>{t('Feel free to reach out to us via Chat in our website')}</p>
 						</div>
 					</div>
 					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
 						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
 							<img src="/img/footer/location.png" alt="Location Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
-						<div className="info">
-							<h1>{t('Locate Us')}</h1>
-							<p>{t('1234 Veloura St, Suite 100, Seoul City, South Korea')}</p>
+						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
+							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Locate Us')}</h1>
+							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>{t('1234 Veloura St, Suite 100, Seoul City, South Korea')}</p>
 						</div>
 					</div>
 					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
 						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
 							<img src="/img/footer/call.png" alt="Call Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
-						<div className="info">
-							<h1>{t('Call Us')}</h1>
-							<p>+82 10-9380-7522</p>
+						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
+							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Call Us')}</h1>
+							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>+82 10-9380-7522</p>
 						</div>
 					</div>
 					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
 						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
 							<img src="/img/footer/inbox.png" alt="Inbox Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
-						<div className="info">
-							<h1>{t('Email Us')}</h1>
-							<p>support@veloura.com</p>
+						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
+							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Email Us')}</h1>
+							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>support@veloura.com</p>
 						</div>
 					</div>
 				</div>

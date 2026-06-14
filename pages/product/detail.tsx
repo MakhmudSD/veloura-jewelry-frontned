@@ -238,8 +238,8 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 
 	const likeProductHandler = async (user: T, id: string) => {
 		try {
-			const user = userVar();
-			if (!user || !user._id) {
+			const currentUser = userVar();
+			if (!currentUser || !currentUser._id) {
 				let message = '';
 				if (i18n?.language === 'kr') {
 					message = '좋아요를 누르려면 로그인해야 합니다.';
@@ -250,22 +250,25 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 				}
 
 				await sweetMixinErrorAlert(message, 2000, () => {
-					router.push('/account/join'); // navigate AFTER alert closes
+					router.push('/account/join');
 				});
 
 				return;
 			}
 
 			if (!id) return;
-			await likeTargetProduct({ variables: { input: id } }); // Server update
-			await getProductsRefetch({ input: searchFilter });
-			if (!user._id) {
+			await likeTargetProduct({ variables: { input: id } });
+			await Promise.all([
+				getProductRefetch({ input: id }),
+				getProductsRefetch({ input: searchFilter }),
+			]);
+			if (currentUser._id) {
 				void notifyMember({
 					notificationType: NotificationType.LIKE,
 					notificationGroup: NotificationGroup.PRODUCT,
 					notificationTitle: 'New like',
-					notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
-					authorId: user._id,
+					notificationDesc: `${currentUser.memberNick ?? 'Someone'} liked your product.`,
+					authorId: currentUser._id,
 				});
 			}
 		} catch (err: any) {
@@ -282,16 +285,33 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 
 	const createCommentHandler = async () => {
 		try {
-			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
-			await createComment({ variables: { input: insertCommentData } });
-			setInsertCommentData({ ...insertCommentData, commentContent: '' });
+			const currentUser = userVar();
+			if (!currentUser || !currentUser._id) {
+				await sweetMixinErrorAlert('Please log in to leave a review', 2000, () => {
+					router.push('/account/join');
+				});
+				return;
+			}
+			if (!insertCommentData.commentContent.trim()) return;
+			if (!insertCommentData.commentRefId) {
+				setInsertCommentData((prev) => ({ ...prev, commentRefId: productId || '' }));
+			}
+			await createComment({
+				variables: {
+					input: {
+						...insertCommentData,
+						commentRefId: insertCommentData.commentRefId || productId || '',
+					},
+				},
+			});
+			setInsertCommentData({ commentGroup: CommentGroup.PRODUCT, commentContent: '', commentRefId: productId || '' });
 			await getCommentsRefetch({ input: commentInquiry });
 			void notifyMember({
 				notificationType: NotificationType.COMMENT,
 				notificationGroup: NotificationGroup.COMMENT,
 				notificationTitle: 'New comment',
-				notificationDesc: `${user.memberNick ?? 'Someone'} commented on your product.`,
-				authorId: user._id,
+				notificationDesc: `${currentUser.memberNick ?? 'Someone'} commented on your product.`,
+				authorId: currentUser._id,
 			});
 		} catch (err: any) {
 			await sweetErrorHandling(err);
@@ -630,7 +650,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 								<Box className={'submit-btn'} component={'div'}>
 									<Button
 										className={'submit-review'}
-										disabled={insertCommentData.commentContent === '' || user?._id === ''}
+										disabled={insertCommentData.commentContent.trim() === ''}
 										onClick={createCommentHandler}
 									>
 										<Typography className={'title'}>Submit Review</Typography>
