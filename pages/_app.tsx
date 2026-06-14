@@ -12,6 +12,7 @@ import { VelouraToastContainer, VelouraConfirmDialog } from '../libs/components/
 import '../scss/app.scss';
 import '../scss/pc/main.scss';
 import '../scss/mobile/main.scss';
+import 'swiper/css/effect-coverflow';
 
 const judson = Judson({
 	weight: ['400', '700'],

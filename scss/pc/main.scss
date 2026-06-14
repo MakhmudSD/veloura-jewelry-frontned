@@ -790,8 +790,17 @@ body::-webkit-scrollbar {
 	// Body / messages
 	.vl-chat__body {
 		flex: 1;
-		overflow: hidden;
-		position: relative;
+		min-height: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		-webkit-overflow-scrolling: touch;
+
+		&::-webkit-scrollbar { width: 4px; }
+		&::-webkit-scrollbar-thumb {
+			background: rgba(212, 175, 55, 0.25);
+			border-radius: 4px;
+		}
+		&::-webkit-scrollbar-track { background: transparent; }
 	}
 
 	.vl-chat__messages {

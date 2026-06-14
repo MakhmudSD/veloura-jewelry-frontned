@@ -202,49 +202,38 @@
 					}
 				}
 
-				/* Infinite marquee wrapper */
-				.brands-marquee-wrapper {
+				/* Mountain / Coverflow swiper */
+				.brands-coverflow-wrap {
 					width: 100%;
-					overflow: hidden;
-					padding: 10px 0 20px;
-
-					&:hover .brands-marquee-track {
-						animation-play-state: paused;
-					}
+					padding: 0 0 30px;
 				}
 
-				.brands-marquee-track {
-					display: flex;
-					flex-direction: row;
-					flex-wrap: nowrap;
-					gap: 40px;
-					width: max-content;
-					animation: brands-scroll 22s linear infinite;
+				.brands-coverflow {
+					width: 100%;
+					padding: 20px 0 10px !important;
 
-					.brand-item {
-						width: 180px;
-						flex-shrink: 0;
+					.brand-cf-slide {
 						display: flex;
 						flex-direction: column;
 						align-items: center;
-						gap: 12px;
+						gap: 14px;
 						cursor: pointer;
 
 						.brand-card {
 							width: 150px;
 							height: 165px;
-							border-radius: 20%;
+							border-radius: 22%;
 							overflow: hidden;
-							border: 2px solid #e0e0e0;
-							background: #d19b7d;
+							border: 2px solid rgba(212, 175, 55, 0.25);
+							background: linear-gradient(145deg, #c8a96e 0%, #d4af37 50%, #a07830 100%);
 							display: flex;
 							align-items: center;
 							justify-content: center;
-							transition: transform 0.4s ease, box-shadow 0.4s ease;
+							box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+							transition: box-shadow 0.3s ease;
 
 							&:hover {
-								transform: scale(1.1);
-								box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+								box-shadow: 0 14px 36px rgba(0, 0, 0, 0.2);
 							}
 
 							img {
@@ -254,30 +243,29 @@
 								transition: transform 0.4s ease;
 							}
 
-							&:hover img {
-								transform: scale(1.05);
-							}
+							&:hover img { transform: scale(1.06); }
 						}
 
 						.brand-heading {
-							font-size: 22px;
-							font-family: "Judson";
+							font-size: 18px;
+							font-family: 'Judson', serif;
 							font-weight: 400;
 							text-align: center;
-							color: #000;
+							color: #2e2424;
 							text-transform: capitalize;
 						}
 					}
-				}
 
-				@keyframes brands-scroll {
-					0%   { transform: translateX(0); }
-					100% { transform: translateX(-50%); }
+					/* active slide = mountain peak */
+					.swiper-slide-active .brand-card {
+						box-shadow: 0 18px 48px rgba(212, 175, 55, 0.32), 0 4px 16px rgba(0, 0, 0, 0.15);
+						border-color: rgba(212, 175, 55, 0.6);
+					}
 				}
 
 				/* Keep old .card-box for fallback */
 				.card-box {
-					display: none; /* replaced by marquee */
+					display: none;
 				}
 			}
 		}

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import EastIcon from '@mui/icons-material/East';
 import AnimatedSnackbar from '../common/Animations';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper';
+import { Autoplay, EffectCoverflow } from 'swiper';
 import { t } from 'i18next';
 import dynamic from 'next/dynamic';
 
@@ -177,9 +177,9 @@ const BrandsSection = () => {
             </Typography>
           </Box>
 
-          {/* Infinite scroll marquee */}
+          {/* Mountain / Coverflow Swiper */}
           <Box
-            className="brands-marquee-wrapper"
+            className="brands-coverflow-wrap"
             style={{
               opacity: 0,
               transition: 'opacity 0.8s ease',
@@ -187,9 +187,27 @@ const BrandsSection = () => {
               ...(revealed ? { opacity: 1 } : {}),
             }}
           >
-            <Stack className="brands-marquee-track" aria-hidden="false">
+            <Swiper
+              className="brands-coverflow"
+              effect="coverflow"
+              grabCursor
+              centeredSlides
+              slidesPerView={3.4}
+              spaceBetween={0}
+              loop
+              speed={700}
+              autoplay={{ delay: 2800, disableOnInteraction: false }}
+              coverflowEffect={{
+                rotate: 0,
+                stretch: 0,
+                depth: 180,
+                modifier: 2.2,
+                slideShadows: false,
+              }}
+              modules={[EffectCoverflow, Autoplay]}
+            >
               {[...BRANDS, ...BRANDS].map((brand, i) => (
-                <Box key={`${brand.name}-${i}`} className="brand-item">
+                <SwiperSlide key={`${brand.name}-${i}`} className="brand-cf-slide">
                   <Box
                     className="brand-card interactive"
                     onClick={() => handleClick(brand.name)}
@@ -202,9 +220,9 @@ const BrandsSection = () => {
                     <img src={brand.logoUrl} alt={brand.name} draggable="false" />
                   </Box>
                   <Typography className="brand-heading">{brand.name}</Typography>
-                </Box>
+                </SwiperSlide>
               ))}
-            </Stack>
+            </Swiper>
           </Box>
         </Stack>
       </Stack>

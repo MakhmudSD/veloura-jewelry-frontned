@@ -183,6 +183,7 @@ h2 {
 	height: 300px;
 	overflow: hidden;
 	background: #0d0904;
+	margin-top: 110px; /* clear the fixed navbar (top-marquee ~50px + bottom-nav 60px) */
 
 	.banner-canvas-wrap {
 		position: absolute;

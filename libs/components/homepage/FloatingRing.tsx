@@ -7,33 +7,34 @@ function Ring() {
   const ref = useRef<THREE.Mesh>(null);
   useFrame((state) => {
     if (!ref.current) return;
-    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.3;
-    ref.current.rotation.y += 0.008;
-    ref.current.position.y = Math.sin(state.clock.elapsedTime * 0.6) * 0.15;
+    // Gentle tilt & slow spin — stays clearly ring-shaped
+    ref.current.rotation.x = 0.5 + Math.sin(state.clock.elapsedTime * 0.35) * 0.12;
+    ref.current.rotation.y += 0.006;
+    ref.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.06;
   });
   return (
     <mesh ref={ref}>
-      <torusGeometry args={[1.1, 0.18, 32, 80]} />
+      <torusGeometry args={[0.72, 0.1, 24, 80]} />
       <meshStandardMaterial
         color="#d4af37"
-        metalness={0.92}
-        roughness={0.12}
-        envMapIntensity={1.2}
+        metalness={0.96}
+        roughness={0.1}
+        envMapIntensity={1.4}
       />
     </mesh>
   );
 }
 
-export default function FloatingRing({ size = 120 }: { size?: number }) {
+export default function FloatingRing({ size = 72 }: { size?: number }) {
   return (
     <Canvas
-      style={{ width: size, height: size, display: 'inline-block' }}
-      camera={{ position: [0, 0, 3.5], fov: 40 }}
+      style={{ width: size, height: size, display: 'inline-block', flexShrink: 0 }}
+      camera={{ position: [0, 0, 2.6], fov: 38 }}
       gl={{ antialias: true, alpha: true }}
     >
-      <ambientLight intensity={0.5} />
-      <pointLight position={[3, 3, 3]} intensity={1.8} color="#fff8e7" />
-      <pointLight position={[-3, -2, 2]} intensity={0.6} color="#d4af37" />
+      <ambientLight intensity={0.4} />
+      <pointLight position={[3, 3, 3]} intensity={2} color="#fff8e7" />
+      <pointLight position={[-2, -2, 2]} intensity={0.8} color="#d4af37" />
       <Ring />
     </Canvas>
   );

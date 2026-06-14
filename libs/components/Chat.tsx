@@ -3,7 +3,6 @@ import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useRouter } from 'next/router';
-import ScrollableFeed from 'react-scrollable-feed';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
 import { Member } from '../types/member/member';
@@ -21,7 +20,8 @@ const AI_MEMBER = {
 } as Partial<Member> as Member;
 
 export default function Chat() {
-  const chatContentRef = useRef<HTMLDivElement>(null);
+  const chatBodyRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messagesList, setMessagesList] = useState<MessagePayload[]>([
     { event: 'message', text: 'Welcome to Veloura ✨ I\'m your personal jewelry assistant. Ask me anything about our collections, care tips, or sizing.', memberData: AI_MEMBER },
   ]);
@@ -34,8 +34,16 @@ export default function Chat() {
   const router = useRouter();
   const user = useReactiveVar(userVar);
 
-  useEffect(() => { setTimeout(() => setOpenButton(true), 600); }, []);
-  useEffect(() => { setOpenButton(false); }, [router.pathname]);
+  // Auto-scroll to bottom whenever messages update
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messagesList]);
+
+  // Show FAB 600ms after any navigation (not just initial mount)
+  useEffect(() => {
+    const t = setTimeout(() => setOpenButton(true), 600);
+    return () => clearTimeout(t);
+  }, [router.pathname]);
   useEffect(() => { if (!open && messagesList.length > 1) setUnread((n) => n + 1); }, [messagesList]);
   useEffect(() => { if (open) setUnread(0); }, [open]);
 
@@ -163,35 +171,34 @@ export default function Chat() {
         </div>
 
         {/* Messages */}
-        <div className="vl-chat__body" ref={chatContentRef}>
-          <ScrollableFeed>
-            <div className="vl-chat__messages">
-              {messagesList.map((msg, i) => {
-                const isUser = msg.memberData?._id === user?._id;
-                const isAI   = msg.memberData?._id === AI_MEMBER._id;
-                const isStreaming = isAI && streaming && i === messagesList.length - 1;
+        <div className="vl-chat__body" ref={chatBodyRef}>
+          <div className="vl-chat__messages">
+            {messagesList.map((msg, i) => {
+              const isUser = msg.memberData?._id === user?._id;
+              const isAI   = msg.memberData?._id === AI_MEMBER._id;
+              const isStreaming = isAI && streaming && i === messagesList.length - 1;
 
-                return (
-                  <div key={i} className={`vl-chat__row ${isUser ? 'vl-chat__row--user' : 'vl-chat__row--ai'}`}>
-                    {isAI && (
-                      <div className="vl-chat__avatar">
-                        <AutoAwesomeIcon style={{ fontSize: 14, color: '#d4af37' }} />
-                      </div>
-                    )}
-                    <div className={`vl-chat__bubble ${isUser ? 'vl-chat__bubble--user' : 'vl-chat__bubble--ai'} ${isStreaming && !msg.text ? 'vl-chat__bubble--typing' : ''}`}>
-                      {isStreaming && !msg.text ? (
-                        <span className="vl-chat__dots">
-                          <span /><span /><span />
-                        </span>
-                      ) : (
-                        msg.text || '…'
-                      )}
+              return (
+                <div key={i} className={`vl-chat__row ${isUser ? 'vl-chat__row--user' : 'vl-chat__row--ai'}`}>
+                  {isAI && (
+                    <div className="vl-chat__avatar">
+                      <AutoAwesomeIcon style={{ fontSize: 14, color: '#d4af37' }} />
                     </div>
+                  )}
+                  <div className={`vl-chat__bubble ${isUser ? 'vl-chat__bubble--user' : 'vl-chat__bubble--ai'} ${isStreaming && !msg.text ? 'vl-chat__bubble--typing' : ''}`}>
+                    {isStreaming && !msg.text ? (
+                      <span className="vl-chat__dots">
+                        <span /><span /><span />
+                      </span>
+                    ) : (
+                      msg.text || '…'
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          </ScrollableFeed>
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
 
         {/* Input */}

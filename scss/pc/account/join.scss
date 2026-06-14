@@ -3,14 +3,14 @@
     .container {
       width: 100%;
       margin: 0 auto;
-      padding: 130px 20px 60px;
+      padding: 140px 20px 80px;
       background:
         url('/img/fiber/naqsh.png') no-repeat center center / cover,
         #ffffff;
     }
 
     .main {
-      min-height: calc(100vh - 130px - 60px);
+      min-height: calc(100vh - 220px);
       display: flex;
       align-items: flex-start;
       padding-bottom: 40px;

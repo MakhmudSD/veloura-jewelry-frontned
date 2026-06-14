@@ -198,44 +198,44 @@ const Footer = () => {
 				</Stack>
 
 				{/* Contact strip — direct child of footer-container, matches CSS scope */}
-				<Stack className="row1">
-					<Stack className="content">
-						<Stack className="icon">
+				<div className="row1">
+					<div className="content">
+						<div className="icon">
 							<img src="/img/footer/inquiry.png" alt="Inquiry Icon" />
-						</Stack>
-						<Stack className="info">
+						</div>
+						<div className="info">
 							<h1>{t('Having queries?')}</h1>
 							<p>{t('Feel free to reach out to us via Chat in our website')}</p>
-						</Stack>
-					</Stack>
-					<Stack className="content">
-						<Stack className="icon">
+						</div>
+					</div>
+					<div className="content">
+						<div className="icon">
 							<img src="/img/footer/location.png" alt="Location Icon" />
-						</Stack>
-						<Stack className="info">
+						</div>
+						<div className="info">
 							<h1>{t('Locate Us')}</h1>
 							<p>{t('1234 Veloura St, Suite 100, Seoul City, South Korea')}</p>
-						</Stack>
-					</Stack>
-					<Stack className="content">
-						<Stack className="icon">
+						</div>
+					</div>
+					<div className="content">
+						<div className="icon">
 							<img src="/img/footer/call.png" alt="Call Icon" />
-						</Stack>
-						<Stack className="info">
+						</div>
+						<div className="info">
 							<h1>{t('Call Us')}</h1>
 							<p>+82 10-9380-7522</p>
-						</Stack>
-					</Stack>
-					<Stack className="content">
-						<Stack className="icon">
+						</div>
+					</div>
+					<div className="content">
+						<div className="icon">
 							<img src="/img/footer/inbox.png" alt="Inbox Icon" />
-						</Stack>
-						<Stack className="info">
+						</div>
+						<div className="info">
 							<h1>{t('Email Us')}</h1>
 							<p>support@veloura.com</p>
-						</Stack>
-					</Stack>
-				</Stack>
+						</div>
+					</div>
+				</div>
 
 				<Stack className={'second'}>
 					<Stack className="row2">
