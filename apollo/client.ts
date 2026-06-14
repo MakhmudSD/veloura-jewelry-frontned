@@ -28,12 +28,12 @@ function getBrowserWsBase(): string {
   return (
     (process.env.NEXT_PUBLIC_API_WS as string | undefined) ||
     (process.env.REACT_APP_API_WS as string | undefined) ||
-    'ws://http://193.168.195.228/:4001'
+    'ws://localhost:4001'
   );
 }
 
 function parseWsBase(raw?: string): { origin: string; basePath: string } {
-  const rawClean = (raw || 'ws://http://193.168.195.228/:4001').trim().replace(/\/+$/, '');
+  const rawClean = (raw || 'ws://localhost:4001').trim().replace(/\/+$/, '');
   try {
     const ensured = /^wss?:\/\//i.test(rawClean) ? rawClean : `ws://${rawClean}`;
     const u = new URL(ensured);
@@ -42,7 +42,7 @@ function parseWsBase(raw?: string): { origin: string; basePath: string } {
     const origin = `${u.protocol}//${u.host}`;
     return { origin, basePath };
   } catch {
-    return { origin: 'ws://http://193.168.195.228:4001', basePath: '' };
+    return { origin: 'ws://localhost:4001', basePath: '' };
   }
 }
 
@@ -52,10 +52,9 @@ function normPath(p: string): string {
   return s === '/' ? '' : s;
 }
 
-function buildWsUrl(origin: string, path: string, token: string): string {
+function buildWsUrl(origin: string, path: string): string {
   const p = normPath(path);
-  const tk = encodeURIComponent(token);
-  return `${origin}${p}?token=${tk}`;
+  return `${origin}${p}`;
 }
 
 /* ===================== Native WS init (singleton) ===================== */
@@ -96,7 +95,7 @@ export function initAppWebSocketOnce() {
     }
 
     const path = candidates[idx];
-    const url = buildWsUrl(origin, path, token);
+    const url = buildWsUrl(origin, path);
 
     console.log('[WS] attempting', url);
 
@@ -119,7 +118,10 @@ export function initAppWebSocketOnce() {
         clearTimeout(attemptTimeout);
         console.log('[WS] open', url);
       }
-      // do not send anything proactively
+      // Send auth token via handshake message — never put tokens in the URL
+      try {
+        wsInstance?.send(JSON.stringify({ kind: 'auth', token }));
+      } catch {}
     });
 
     wsInstance.addEventListener('message', (e) => {
@@ -174,7 +176,6 @@ const authLink = new ApolloLink((operation, forward) => {
   operation.setContext(({ headers = {} }) => ({
     headers: { ...headers, ...getHeaders() },
   }));
-  console.warn('requesting.. ', operation);
   return forward(operation!);
 });
 
@@ -182,7 +183,7 @@ const httpLink = createUploadLink({
   uri:
     process.env.NEXT_PUBLIC_API_GRAPHQL_URL ||
     process.env.REACT_APP_API_GRAPHQL_URL ||
-    'http://193.168.195.228:4001/graphql',
+    'http://localhost:4001/graphql',
 }) as unknown as ApolloLink;
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
