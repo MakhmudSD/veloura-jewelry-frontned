@@ -42,7 +42,7 @@ const Footer = () => {
 
 							<Box className="footer-left-bottom">
 								<h1>{t('Subscribe Our Newsletter')}</h1>
-								<p>{t('Joining hands, building a stronger nation through immigration.')}</p>
+								<p>{t('Stay in the loop with new collections, exclusive drops, and care guides.')}</p>
 								<div className="subscribe-row">
 									<input
 										type="email"
@@ -125,6 +125,7 @@ const Footer = () => {
 		);
 	} else {
 		return (
+			<div id="footer">
 			<Stack className={'footer-container'}>
 				<Stack className={'main'}>
 					<Stack className="left">
@@ -141,7 +142,7 @@ const Footer = () => {
 
 						<Box className="footer-left-bottom">
 							<h1>{t('Subscribe Our Newsletter')}</h1>
-							<p>{t('Joining hands, building a stronger nation through immigration.')}</p>
+							<p>{t('Stay in the loop with new collections, exclusive drops, and care guides.')}</p>
 							<div className="subscribe-row">
 								<input
 									type="email"
@@ -268,6 +269,7 @@ const Footer = () => {
 					</Stack>
 				</Stack>
 			</Stack>
+			</div>
 		);
 	}
 };

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Box, Button, CircularProgress, Divider, IconButton, Rating, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutFull from '../../libs/components/layout/LayoutFull';
@@ -68,6 +68,24 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 	const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
 	const toggleAccordion = (key: string) => setOpenAccordion((prev) => (prev === key ? null : key));
+
+	const accordionGroupRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const el = accordionGroupRef.current;
+		if (!el) return;
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setOpenAccordion('details');
+					observer.disconnect();
+				}
+			},
+			{ threshold: 0.4 },
+		);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, []);
 
 	const [insertCommentData, setInsertCommentData] = useState<CommentInput>({
 		commentGroup: CommentGroup.PRODUCT,
@@ -491,7 +509,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 								</IconButton>
 							</Box>
 
-							<Box className="detail-accordion-group">
+							<Box className="detail-accordion-group" ref={accordionGroupRef}>
 								{[
 									{
 										key: 'details',

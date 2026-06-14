@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -18,6 +18,8 @@ import { i18n } from 'next-i18next';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+
+const FloatingRing = lazy(() => import('./FloatingRing'));
 
 
 interface TrendProductsProps {
@@ -161,9 +163,14 @@ const TrendProducts = (props: TrendProductsProps) => {
     <Stack className={'trend-products'}>
       <Stack className={'container'}>
         <Stack className={'info-box'}>
-          <Box component={'div'} className={'trends-top'}>
-          <span>{t('Designed For Everyday Glamour')}</span>
-          <p>{t('Soon-to-be staples in your rotation')}</p>
+          <Box component={'div'} className={'trends-top'} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <Suspense fallback={null}>
+              <FloatingRing size={80} />
+            </Suspense>
+            <Box>
+              <span>{t('Designed For Everyday Glamour')}</span>
+              <p>{t('Soon-to-be staples in your rotation')}</p>
+            </Box>
           </Box>
         </Stack>
 

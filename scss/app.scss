@@ -154,3 +154,24 @@ h2 {
 	gap: 8px;
 	padding: 8px;
 }
+
+/* ── Luxury section divider ── */
+.v-gold-divider {
+	width: 60px;
+	height: 3px;
+	background: linear-gradient(90deg, #d4af37, #f0d060, #d4af37);
+	border-radius: 2px;
+	margin: 12px auto 0;
+}
+
+/* ── Scroll reveal ── */
+.v-fade-up {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 0.7s $ease-luxury, transform 0.7s $ease-luxury;
+
+	&.visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
