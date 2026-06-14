@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack, Box, Divider, Typography } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import { useRouter } from 'next/router';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
@@ -50,7 +50,7 @@ const CategoryProductCard = (props: CategoryProductCardProps) => {
 			<Stack className="category-card-box">
 				<Box
 					className={'card-img'}
-					style={{ backgroundImage: `url(${REACT_APP_API_URL}/${product?.productImages[0]})` }}
+					style={{ backgroundImage: `url(${resolveImageUrl(product?.productImages[0])})` }}
 					onClick={() => pushCategoryFilter(categoryList[0])}
 				>
 					<button
@@ -70,7 +70,7 @@ const CategoryProductCard = (props: CategoryProductCardProps) => {
 			<Stack className="category-card-box">
 				<Box
 					className={'card-img'}
-					style={{ backgroundImage: `url(${REACT_APP_API_URL}/${product?.productImages[0]})` }}
+					style={{ backgroundImage: `url(${resolveImageUrl(product?.productImages[0])})` }}
 					onClick={() => pushCategoryFilter(categoryList[0])}
 				>
 					<button

@@ -3,7 +3,7 @@ import { Stack, Box, Typography, IconButton } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import { useReactiveVar } from '@apollo/client';
 import { basketItemsVar, userVar } from '../../../apollo/store';
 import { Product } from '../../types/product/product';
@@ -34,9 +34,7 @@ const TrendProductCard = (props: TrendProductCardProps) => {
 	const [liked, setLiked] = useState<boolean>(Boolean(product?.meLiked?.[0]?.myFavorite));
 	const [glow, setGlow] = useState(false);
 
-	const imagePath: string = product?.productImages?.[0]
-		? `${REACT_APP_API_URL}/${product.productImages[0]}`
-		: '/img/banner/header1.svg';
+	const imagePath: string = resolveImageUrl(product?.productImages?.[0], '/img/banner/header1.svg');
 
 	const pushDetailHandler = (productId: string) => {
 		router.push({ pathname: '/product/detail', query: { id: productId } });
@@ -117,7 +115,7 @@ const TrendProductCard = (props: TrendProductCardProps) => {
 						{product?.productImages?.[1] && (
 							<img
 								className="hover-img"
-								src={`${REACT_APP_API_URL}/${product.productImages[1]}`}
+								src={resolveImageUrl(product.productImages[1])}
 								alt={`${product.productTitle} alternate`}
 								loading="lazy"
 							/>

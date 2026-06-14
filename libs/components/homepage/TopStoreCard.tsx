@@ -8,6 +8,7 @@ import { userVar } from '../../../apollo/store';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import { resolveImageUrl } from '../../config';
 import { sweetMixinErrorAlert } from '../../sweetAlert';
 import { i18n, useTranslation } from 'next-i18next';
 
@@ -28,9 +29,7 @@ const TopStoreCard = (props: TopStoreProps) => {
 	const [glow, setGlow] = useState(false);
 	const { t } = useTranslation('common');
 
-	const storeImage = store?.memberImage
-		? `${process.env.REACT_APP_API_URL}/${store?.memberImage}`
-		: '/img/profile/defaultStore.jpg';
+	const storeImage = resolveImageUrl(store?.memberImage, '/img/profile/defaultStore.jpg');
 
 	/** HANDLERS **/
 	const pushDetailHandler = async (storeId: string) => {

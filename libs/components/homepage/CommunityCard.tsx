@@ -6,6 +6,7 @@ import Moment from 'react-moment';
 import { BoardArticle } from '../../types/board-article/board-article';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { useTranslation } from 'next-i18next';
+import { resolveImageUrl } from '../../config';
 
 interface CommunityCardProps {
   vertical: boolean;
@@ -32,9 +33,7 @@ const CommunityCard = (props: CommunityCardProps) => {
   const { vertical, article, index, recentlyVisited } = props;
   const device = useDeviceDetect();
 
-  const articleImage = article?.articleImage
-    ? `${process.env.REACT_APP_API_URL}/${article.articleImage}`
-    : '/img/event.svg';
+  const articleImage = resolveImageUrl(article?.articleImage, '/img/event.svg');
 
   const titleText = article?.articleTitle ?? '';
   const excerpt = useMemo(
