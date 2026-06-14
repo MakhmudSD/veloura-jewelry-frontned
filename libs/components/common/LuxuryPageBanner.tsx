@@ -93,11 +93,15 @@ function Scene() {
 interface LuxuryPageBannerProps {
 	title: string;
 	breadcrumb?: string;
+	bgImage?: string;
 }
 
-export default function LuxuryPageBanner({ title, breadcrumb }: LuxuryPageBannerProps) {
+export default function LuxuryPageBanner({ title, breadcrumb, bgImage }: LuxuryPageBannerProps) {
 	return (
-		<div className="luxury-page-banner">
+		<div
+			className="luxury-page-banner"
+			style={bgImage ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+		>
 			{/* Three.js canvas fills the banner */}
 			<div className="banner-canvas-wrap">
 				<Suspense fallback={null}>

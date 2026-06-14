@@ -3,16 +3,17 @@
     .container {
       width: 100%;
       margin: 0 auto;
-      padding: 60px 20px;
+      padding: 130px 20px 60px;
       background:
         url('/img/fiber/naqsh.png') no-repeat center center / cover,
         #ffffff;
     }
 
     .main {
-      min-height: 72vh;
+      min-height: calc(100vh - 130px - 60px);
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      padding-bottom: 40px;
 
       &.centered { justify-content: center; }
     }

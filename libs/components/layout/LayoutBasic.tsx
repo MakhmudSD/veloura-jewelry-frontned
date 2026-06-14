@@ -135,6 +135,7 @@ const withLayoutBasic = (Component: any) => {
 							<LuxuryPageBanner
 								title={t(memoizedValues.title)}
 								breadcrumb={memoizedValues.desc ? t(memoizedValues.desc) : undefined}
+								bgImage={memoizedValues.bgImage || undefined}
 							/>
 						)}
 
