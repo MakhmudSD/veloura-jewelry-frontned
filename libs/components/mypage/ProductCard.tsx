@@ -9,6 +9,7 @@ import Moment from 'react-moment';
 import { useRouter } from 'next/router';
 import { ProductStatus } from '../../enums/product.enum';
 import { Product } from '../../types/product/product';
+import { resolveImageUrl } from '../../config';
 
 interface ProductCardProps {
 	product: Product;
@@ -57,7 +58,7 @@ export const ProductCard = (props: ProductCardProps) => {
 		return (
 			<Stack className="product-card-box">
 				<Stack className="image-box" onClick={() => pushProductDetail(product?._id)}>
-					<img src={`${process.env.REACT_APP_API_URL}/${product.productImages[0]}`} alt="" />
+					<img src={resolveImageUrl(product.productImages[0])} alt="" />
 				</Stack>
 				<Stack className="information-box" onClick={() => pushProductDetail(product?._id)}>
 					<Typography className="name">{product.productTitle}</Typography>

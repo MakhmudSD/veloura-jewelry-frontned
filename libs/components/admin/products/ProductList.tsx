@@ -15,7 +15,7 @@ import {
 import Avatar from '@mui/material/Avatar';
 import { Stack } from '@mui/material';
 import { Product } from '../../../types/product/product';
-import { REACT_APP_API_URL } from '../../../config';
+import { resolveImageUrl } from '../../../config';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Typography from '@mui/material/Typography';
 import { ProductStatus } from '../../../enums/product.enum';
@@ -143,7 +143,7 @@ export const ProductPanelList = (props: ProductPanelListType) => {
 
 						{products.length !== 0 &&
 							products.map((product: Product, index: number) => {
-								const productImage = `${REACT_APP_API_URL}/${product?.productImages[0]}`;
+								const productImage = resolveImageUrl(product?.productImages?.[0]);
 
 								return (
 									<TableRow hover key={product?._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>

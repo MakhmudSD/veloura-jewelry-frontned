@@ -4,7 +4,7 @@ import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { BoardArticle } from '../../types/board-article/board-article';
 import Moment from 'react-moment';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
@@ -36,9 +36,7 @@ const CommunityCard = (props: CommunityCardProps) => {
 	const contentImage = getFirstImageFromContent(boardArticle.articleContent || '');
 	const imagePath: string = contentImage
 		? contentImage
-		: boardArticle?.articleImage
-			? `${REACT_APP_API_URL}/${boardArticle.articleImage}`
-			: '/img/community/communityImg.png';
+		: resolveImageUrl(boardArticle?.articleImage, '/img/community/communityImg.png');
 
 	/** HANDLERS **/
 	const chooseArticleHandler = (e: React.SyntheticEvent, boardArticle: BoardArticle) => {

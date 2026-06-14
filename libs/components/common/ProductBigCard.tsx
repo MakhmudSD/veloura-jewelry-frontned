@@ -7,7 +7,7 @@ import { useReactiveVar } from '@apollo/client';
 import { basketItemsVar, userVar } from '../../../apollo/store';
 import { useRouter } from 'next/router';
 import { Product } from '../../types/product/product';
-import { REACT_APP_API_URL, topProductRank } from '../../config';
+import { resolveImageUrl, topProductRank } from '../../config';
 import { formatterStr } from '../../utils';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { sweetBasicAlert, sweetMixinErrorAlert } from '../../sweetAlert';
@@ -34,13 +34,8 @@ const ProductBigCard = ({
   const [glow, setGlow] = useState(false);
   const [stars, setStars] = useState<number>(0);
 
-  const image1 = product?.productImages?.[0]
-    ? `${REACT_APP_API_URL}/${product.productImages[0]}`
-    : '/img/banner/header1.svg';
-
-  const image2 = product?.productImages?.[1]
-    ? `${REACT_APP_API_URL}/${product.productImages[1]}`
-    : image1;
+  const image1 = resolveImageUrl(product?.productImages?.[0], '/img/banner/header1.svg');
+  const image2 = resolveImageUrl(product?.productImages?.[1], image1);
 
   useEffect(() => {
     if (product) {
