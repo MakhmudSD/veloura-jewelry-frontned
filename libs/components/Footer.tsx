@@ -200,8 +200,8 @@ const Footer = () => {
 				{/* Contact strip */}
 				<div style={{ display:'flex', flexDirection:'row', justifyContent:'space-around', alignItems:'center', flexWrap:'wrap', gap:'24px', padding:'40px 80px', borderBottom:'1px solid rgba(212,175,55,0.2)', width:'100%', boxSizing:'border-box' }}>
 					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div className="icon">
-							<img src="/img/footer/inquiry.png" alt="Inquiry Icon" />
+						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
+							<img src="/img/footer/inquiry.png" alt="Inquiry Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
 						<div className="info">
 							<h1>{t('Having queries?')}</h1>
@@ -209,8 +209,8 @@ const Footer = () => {
 						</div>
 					</div>
 					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div className="icon">
-							<img src="/img/footer/location.png" alt="Location Icon" />
+						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
+							<img src="/img/footer/location.png" alt="Location Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
 						<div className="info">
 							<h1>{t('Locate Us')}</h1>
@@ -218,8 +218,8 @@ const Footer = () => {
 						</div>
 					</div>
 					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div className="icon">
-							<img src="/img/footer/call.png" alt="Call Icon" />
+						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
+							<img src="/img/footer/call.png" alt="Call Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
 						<div className="info">
 							<h1>{t('Call Us')}</h1>
@@ -227,8 +227,8 @@ const Footer = () => {
 						</div>
 					</div>
 					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div className="icon">
-							<img src="/img/footer/inbox.png" alt="Inbox Icon" />
+						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
+							<img src="/img/footer/inbox.png" alt="Inbox Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
 						</div>
 						<div className="info">
 							<h1>{t('Email Us')}</h1>
