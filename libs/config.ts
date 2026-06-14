@@ -70,6 +70,6 @@ export const calculateStars = (comments: number, likes: number, views: number) =
  *  relative paths (locally uploaded files) are prefixed with the API origin. */
 export const resolveImageUrl = (path: string | undefined | null, fallback = ''): string => {
   if (!path) return fallback;
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('//')) return path;
+  if (path.startsWith('/') || path.startsWith('http')) return path;
   return `${REACT_APP_API_URL}/${path}`;
 };
