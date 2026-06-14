@@ -11,15 +11,59 @@ import {
 	IconButton,
 	CircularProgress,
 	Link,
+	Tooltip,
 } from '@mui/material';
 import { useReactiveVar, useMutation } from '@apollo/client';
 import { useRouter } from 'next/router';
 import { basketItemsVar, clearBasket, userVar } from '../../apollo/store';
 import { CREATE_ORDER } from '../../apollo/user/mutation';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
 import BlockIcon from '@mui/icons-material/Block';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import LockIcon from '@mui/icons-material/Lock';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
+import { sweetErrorHandling } from '../../libs/sweetAlert';
 
+/* ── Card-type detection ─────────────────────────────── */
+function detectCardType(num: string): 'visa' | 'mastercard' | 'amex' | 'generic' {
+	const n = num.replace(/\s/g, '');
+	if (/^4/.test(n)) return 'visa';
+	if (/^5[1-5]|^2[2-7]/.test(n)) return 'mastercard';
+	if (/^3[47]/.test(n)) return 'amex';
+	return 'generic';
+}
+
+const CARD_LABELS: Record<ReturnType<typeof detectCardType>, string> = {
+	visa: 'VISA',
+	mastercard: 'Mastercard',
+	amex: 'Amex',
+	generic: '',
+};
+
+function formatCardNumber(value: string, type: ReturnType<typeof detectCardType>): string {
+	const digits = value.replace(/\D/g, '').slice(0, type === 'amex' ? 15 : 16);
+	if (type === 'amex') {
+		return digits.replace(/^(\d{4})(\d{6})(\d{0,5}).*/, (_m, a, b, c) =>
+			[a, b, c].filter(Boolean).join(' '),
+		);
+	}
+	return digits.replace(/(.{4})/g, '$1 ').trim();
+}
+
+function formatExpiry(value: string): string {
+	const digits = value.replace(/\D/g, '').slice(0, 4);
+	if (digits.length > 2) return `${digits.slice(0, 2)} / ${digits.slice(2)}`;
+	return digits;
+}
+
+/* ── Demo card numbers ───────────────────────────────── */
+const DEMO_CARDS = [
+	{ label: 'Visa', number: '4111 1111 1111 1111', cvv: '123', expiry: '12 / 28' },
+	{ label: 'Mastercard', number: '5500 0000 0000 0004', cvv: '321', expiry: '08 / 27' },
+];
+
+/* ── Checkout page ───────────────────────────────────── */
 const Checkout = () => {
 	const basketItems = useReactiveVar(basketItemsVar);
 	const user = useReactiveVar(userVar);
@@ -33,9 +77,14 @@ const Checkout = () => {
 
 	const [cardName, setCardName] = useState('');
 	const [cardNumber, setCardNumber] = useState('');
+	const [cardExpiry, setCardExpiry] = useState('');
 	const [cardCvv, setCardCvv] = useState('');
+	const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
 	const [createOrder] = useMutation(CREATE_ORDER);
+
+	const cardType = detectCardType(cardNumber);
+	const maxCvv = cardType === 'amex' ? 4 : 3;
 
 	if (user?.memberType !== 'USER') {
 		return (
@@ -79,21 +128,37 @@ const Checkout = () => {
 	const giftWrapFee = giftWrap ? 10000 : 0;
 	const total = subtotal + (shippingFee ?? 0) + giftWrapFee;
 
-	const formatCardNumber = (value: string) => {
-		return value
-			.replace(/\D/g, '')
-			.slice(0, 16)
-			.replace(/(.{4})/g, '$1 ')
-			.trim();
+	/* Validation */
+	const validate = (): boolean => {
+		const errs: Record<string, string> = {};
+		if (!cardName.trim()) errs.cardName = 'Cardholder name is required';
+		const raw = cardNumber.replace(/\s/g, '');
+		if (raw.length < (cardType === 'amex' ? 15 : 16)) errs.cardNumber = 'Enter a valid card number';
+		const parts = cardExpiry.replace(/\s/g, '').split('/');
+		const mo = parseInt(parts[0] || '0', 10);
+		const yr = parseInt(parts[1] || '0', 10) + 2000;
+		const now = new Date();
+		if (!parts[0] || !parts[1] || mo < 1 || mo > 12 || yr < now.getFullYear() || (yr === now.getFullYear() && mo < now.getMonth() + 1)) {
+			errs.cardExpiry = 'Enter a valid expiry date';
+		}
+		if (cardCvv.length < maxCvv) errs.cardCvv = `CVV must be ${maxCvv} digits`;
+		if (!agreeTerms) errs.agreeTerms = 'You must agree to the terms';
+		setFieldErrors(errs);
+		return Object.keys(errs).length === 0;
+	};
+
+	const fillDemoCard = (card: (typeof DEMO_CARDS)[number]) => {
+		setCardNumber(card.number);
+		setCardExpiry(card.expiry);
+		setCardCvv(card.cvv);
+		setCardName('Demo User');
+		setFieldErrors({});
 	};
 
 	const handleFakePayment = async () => {
-		if (!agreeTerms || !cardNumber || !cardCvv || !cardName) return;
-
+		if (!validate()) return;
 		setLoading(true);
-
 		try {
-			// Create the order with items from basket
 			const { data } = await createOrder({
 				variables: {
 					input: basketItems.map((item) => ({
@@ -108,26 +173,18 @@ const Checkout = () => {
 			const newOrderId = newOrder?._id;
 			const orderTotal = newOrder?.orderTotal ?? total;
 
-			// Persist for success page (and as a fallback on refresh)
 			try {
 				sessionStorage.setItem('lastOrderId', String(newOrderId ?? ''));
 				sessionStorage.setItem('lastOrderTotal', String(orderTotal ?? ''));
 			} catch {}
 
-			// Clear cart for the next purchase flow
 			clearBasket();
-
-			// Go to success with real orderId/total
 			router.push({
 				pathname: '/checkout/success',
-				query: {
-					orderId: String(newOrderId ?? ''),
-					total: String(orderTotal ?? ''),
-				},
+				query: { orderId: String(newOrderId ?? ''), total: String(orderTotal ?? '') },
 			});
 		} catch (err: any) {
-			alert('Failed to place order. Please try again.');
-			console.error(err?.message || err);
+			sweetErrorHandling(err);
 			setLoading(false);
 		}
 	};
@@ -147,39 +204,31 @@ const Checkout = () => {
 							<Box className="checkout-item-info">
 								<Typography>{item.productTitle}</Typography>
 								<Typography>₩{item.productPrice.toLocaleString()}</Typography>
-
 								<Stack spacing={0.25} sx={{ mt: 0.5 }}>
-									{/* ✅ Always show weight */}
 									{typeof item.weight !== 'undefined' && item.weight !== null && (
 										<Typography variant="body2" sx={{ color: '#7a6a58' }}>
 											• Weight: <b>{item.weight}</b>
 										</Typography>
 									)}
-
-									{/* ✅ Only show ring size if present */}
 									{typeof item.ringSize !== 'undefined' && item.ringSize !== null && (
 										<Typography variant="body2" sx={{ color: '#7a6a58' }}>
 											• Size: <b>{item.ringSize}</b>
 										</Typography>
 									)}
-
-									{/* ✅ Show seller/store name with link */}
 									{item.memberId && item.memberNick && (
 										<Typography variant="body2" sx={{ color: '#7a6a58' }}>
 											• Seller:{' '}
 											<Link
 												href={`/store/detail?id=${item.memberId}`}
 												style={{ color: '#b8860b', textDecoration: 'none', fontWeight: 500 }}
-												>
+											>
 												{item.memberNick}
-												</Link>
-
+											</Link>
 										</Typography>
 									)}
 								</Stack>
 							</Box>
-
-							<Stack direction="row" spacing={1}>
+							<Stack direction="row" spacing={1} alignItems="center">
 								<Button onClick={() => handleQuantityChange(item.productId, -1)}>-</Button>
 								<Typography>{item.itemQuantity}</Typography>
 								<Button onClick={() => handleQuantityChange(item.productId, 1)}>+</Button>
@@ -191,7 +240,6 @@ const Checkout = () => {
 						</Stack>
 					))}
 
-					{/* Notes */}
 					<Box className="checkout-note">
 						<Typography>Order Special Instructions:</Typography>
 						<TextField
@@ -204,7 +252,6 @@ const Checkout = () => {
 						/>
 					</Box>
 
-					{/* Gift Wrap */}
 					<FormControlLabel
 						control={<Checkbox checked={giftWrap} onChange={() => setGiftWrap(!giftWrap)} />}
 						label="Gift wrap your purchase for just ₩10,000"
@@ -224,43 +271,119 @@ const Checkout = () => {
 					<Typography>Subtotal: ₩{subtotal.toLocaleString()}</Typography>
 					{shippingFee !== null && <Typography>Shipping Fee: ₩{shippingFee.toLocaleString()}</Typography>}
 					{giftWrap && <Typography>Gift Wrap: ₩{giftWrapFee.toLocaleString()}</Typography>}
-					<Typography>Total: ₩{total.toLocaleString()}</Typography>
+					<Typography sx={{ fontWeight: 700, color: '#5c4432 !important' }}>
+						Total: ₩{total.toLocaleString()}
+					</Typography>
 
 					<Divider />
 
-					<Typography variant="h6">Card Payment</Typography>
-					<TextField fullWidth label="Cardholder Name" value={cardName} onChange={(e) => setCardName(e.target.value)} />
-					<TextField
-						fullWidth
-						label="Card Number"
-						value={cardNumber}
-						onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-						placeholder="XXXX XXXX XXXX XXXX"
-						inputProps={{ maxLength: 19 }}
-					/>
-					<TextField
-						fullWidth
-						label="CVV"
-						value={cardCvv}
-						onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
-						placeholder="123"
-						inputProps={{ maxLength: 3 }}
-					/>
+					{/* ── Payment panel ── */}
+					<Box className="co-pay">
+						{/* Demo mode badge */}
+						<Box className="co-pay__demo-badge">
+							<LockIcon sx={{ fontSize: 13 }} />
+							DEMO MODE — no real charge
+						</Box>
 
-					<FormControlLabel
-						control={<Checkbox checked={agreeTerms} onChange={() => setAgreeTerms(!agreeTerms)} />}
-						label="I agree with the terms & conditions"
-					/>
+						<Typography variant="h6" className="co-pay__title">
+							Card Payment
+						</Typography>
 
-					<Button fullWidth variant="contained" disabled={!agreeTerms || loading} onClick={handleFakePayment}>
-						{loading ? <CircularProgress size={20} /> : 'Proceed to Checkout'}
-					</Button>
+						{/* Quick-fill demo cards */}
+						<Box className="co-pay__demo-cards">
+							{DEMO_CARDS.map((c) => (
+								<button key={c.label} className="co-pay__demo-fill" onClick={() => fillDemoCard(c)}>
+									Use {c.label} test card
+								</button>
+							))}
+						</Box>
 
-					<Stack direction="row" justifyContent="space-between">
-						<Button onClick={() => router.push('/store')}>Return to Store</Button>
-						<Button color="error" onClick={() => basketItemsVar([])}>
-							Empty Cart
+						{/* Card type pill */}
+						{cardType !== 'generic' && (
+							<Box className={`co-pay__card-type co-pay__card-type--${cardType}`}>
+								<CreditCardIcon sx={{ fontSize: 14 }} />
+								{CARD_LABELS[cardType]}
+							</Box>
+						)}
+
+						<TextField
+							fullWidth
+							label="Cardholder Name"
+							value={cardName}
+							onChange={(e) => setCardName(e.target.value)}
+							error={!!fieldErrors.cardName}
+							helperText={fieldErrors.cardName}
+							sx={{ mb: 2 }}
+						/>
+						<TextField
+							fullWidth
+							label="Card Number"
+							value={cardNumber}
+							onChange={(e) => setCardNumber(formatCardNumber(e.target.value, cardType))}
+							placeholder="XXXX XXXX XXXX XXXX"
+							inputProps={{ maxLength: 19 }}
+							error={!!fieldErrors.cardNumber}
+							helperText={fieldErrors.cardNumber}
+							sx={{ mb: 2 }}
+						/>
+						<Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+							<TextField
+								fullWidth
+								label="Expiry (MM / YY)"
+								value={cardExpiry}
+								onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
+								placeholder="MM / YY"
+								inputProps={{ maxLength: 7 }}
+								error={!!fieldErrors.cardExpiry}
+								helperText={fieldErrors.cardExpiry}
+							/>
+							<TextField
+								fullWidth
+								label={
+									<Stack direction="row" alignItems="center" gap={0.5} component="span">
+										CVV
+										<Tooltip title={cardType === 'amex' ? '4-digit code on front of card' : '3-digit code on back of card'} arrow>
+											<HelpOutlineIcon sx={{ fontSize: 14, cursor: 'help', opacity: 0.6 }} />
+										</Tooltip>
+									</Stack>
+								}
+								value={cardCvv}
+								onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, maxCvv))}
+								placeholder={cardType === 'amex' ? '1234' : '123'}
+								inputProps={{ maxLength: maxCvv }}
+								error={!!fieldErrors.cardCvv}
+								helperText={fieldErrors.cardCvv}
+								type="password"
+							/>
+						</Stack>
+
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={agreeTerms}
+									onChange={() => { setAgreeTerms(!agreeTerms); setFieldErrors((e) => ({ ...e, agreeTerms: '' })); }}
+								/>
+							}
+							label="I agree with the terms & conditions"
+						/>
+						{fieldErrors.agreeTerms && (
+							<Typography variant="caption" color="error">{fieldErrors.agreeTerms}</Typography>
+						)}
+
+						<Button
+							fullWidth
+							variant="contained"
+							disabled={loading}
+							onClick={handleFakePayment}
+							sx={{ mt: 2 }}
+						>
+							{loading ? <CircularProgress size={20} /> : 'Proceed to Checkout'}
 						</Button>
+					</Box>
+
+					<Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
+						<Button onClick={() => router.push('/store')}>Return to Store</Button>
+						<Button color="error" onClick={() => basketItemsVar([])}>Empty Cart</Button>
 					</Stack>
 				</Box>
 			</Stack>

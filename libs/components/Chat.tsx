@@ -1,17 +1,12 @@
-// libs/components/Chat.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Avatar, Box, Stack } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
-import MarkChatUnreadIcon from '@mui/icons-material/MarkChatUnread';
+import CloseIcon from '@mui/icons-material/Close';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useRouter } from 'next/router';
 import ScrollableFeed from 'react-scrollable-feed';
-import { RippleBadge } from '../../scss/MaterialTheme/styled';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../apollo/store';
 import { Member } from '../types/member/member';
-import { Messages, REACT_APP_API_URL } from '../config';
-import { sweetErrorAlert } from '../sweetAlert';
 
 interface MessagePayload {
   event: string;
@@ -19,40 +14,30 @@ interface MessagePayload {
   memberData: Member | null;
 }
 
-// Keep it minimal; assert as Partial to avoid filling all Member fields
 const AI_MEMBER = {
   _id: 'veloura-ai',
   memberNick: 'Veloura AI',
-  memberFullName: 'Veloura Assistant',
   memberImage: '/img/icons/ai.png',
 } as Partial<Member> as Member;
 
-const Chat = () => {
+export default function Chat() {
   const chatContentRef = useRef<HTMLDivElement>(null);
   const [messagesList, setMessagesList] = useState<MessagePayload[]>([
-    { event: 'message', text: 'Welcome to Veloura ✨ How can I help?', memberData: AI_MEMBER },
+    { event: 'message', text: 'Welcome to Veloura ✨ I\'m your personal jewelry assistant. Ask me anything about our collections, care tips, or sizing.', memberData: AI_MEMBER },
   ]);
-  const [onlineUsers, setOnlineUsers] = useState<number>(1); // AI online
   const textInput = useRef<HTMLInputElement>(null);
-  const [messageInput, setMessageInput] = useState<string>('');
+  const [messageInput, setMessageInput] = useState('');
   const [open, setOpen] = useState(false);
   const [openButton, setOpenButton] = useState(false);
   const [streaming, setStreaming] = useState(false);
+  const [unread, setUnread] = useState(0);
   const router = useRouter();
   const user = useReactiveVar(userVar);
 
-  /** LIFECYCLES **/
-  useEffect(() => {
-    const timeoutId = setTimeout(() => setOpenButton(true), 100);
-    return () => clearTimeout(timeoutId);
-  }, []);
-
-  useEffect(() => {
-    setOpenButton(false);
-  }, [router.pathname]);
-
-  /** HANDLERS **/
-  const handleOpenChat = () => setOpen((prev) => !prev);
+  useEffect(() => { setTimeout(() => setOpenButton(true), 600); }, []);
+  useEffect(() => { setOpenButton(false); }, [router.pathname]);
+  useEffect(() => { if (!open && messagesList.length > 1) setUnread((n) => n + 1); }, [messagesList]);
+  useEffect(() => { if (open) setUnread(0); }, [open]);
 
   const getInputMessageHandler = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
@@ -62,7 +47,6 @@ const Chat = () => {
     if (e.key === 'Enter') onClickHandler();
   };
 
-  // Convert local messages to OpenAI format and stream back
   const sendToAI = async (history: MessagePayload[]) => {
     const toOpenAi = history.map((m) => ({
       role: m.memberData?._id === AI_MEMBER._id ? 'assistant' : 'user',
@@ -83,7 +67,6 @@ const Chat = () => {
     while (true) {
       const { value, done } = await reader.read();
       if (done) break;
-
       buffer += decoder.decode(value, { stream: true });
       const chunks = buffer.split('\n\n');
       buffer = chunks.pop() || '';
@@ -92,62 +75,37 @@ const Chat = () => {
         if (!c.startsWith('data:')) continue;
         const payload = c.slice(5).trim();
         if (!payload) continue;
-
         try {
           const parsed = JSON.parse(payload);
-
           if (parsed.error) {
             setMessagesList((prev) => {
               const copy = [...prev];
-              copy[copy.length - 1] = {
-                event: 'message',
-                text: `⚠️ ${parsed.error}`,
-                memberData: AI_MEMBER,
-              };
+              copy[copy.length - 1] = { event: 'message', text: `⚠️ ${parsed.error}`, memberData: AI_MEMBER };
               return copy;
             });
             return;
           }
-
           const { delta, done: finished } = parsed;
           if (delta) {
             setMessagesList((prev) => {
               const copy = [...prev];
-              const lastIdx = copy.length - 1;
-              copy[lastIdx] = {
-                ...copy[lastIdx],
-                text: (copy[lastIdx].text || '') + delta,
-              };
+              const last = copy.length - 1;
+              copy[last] = { ...copy[last], text: (copy[last].text || '') + delta };
               return copy;
             });
           }
           if (finished) return;
-        } catch {
-          // ignore partial json
-        }
+        } catch { /* ignore partial */ }
       }
     }
   };
 
   const onClickHandler = async () => {
     const text = messageInput.trim();
-    if (!text) {
-      sweetErrorAlert(Messages.error4);
-      return;
-    }
-    if (streaming) return;
+    if (!text || streaming) return;
 
-    const userMsg: MessagePayload = {
-      event: 'message',
-      text,
-      memberData: user as Member,
-    };
-    const aiMsg: MessagePayload = {
-      event: 'message',
-      text: '',
-      memberData: AI_MEMBER,
-    };
-
+    const userMsg: MessagePayload = { event: 'message', text, memberData: user as Member };
+    const aiMsg: MessagePayload = { event: 'message', text: '', memberData: AI_MEMBER };
     const next = [...messagesList, userMsg, aiMsg];
     setMessagesList(next);
     setMessageInput('');
@@ -155,14 +113,10 @@ const Chat = () => {
 
     try {
       await sendToAI(next);
-    } catch (err: any) {
+    } catch {
       setMessagesList((prev) => {
         const copy = [...prev];
-        copy[copy.length - 1] = {
-          event: 'message',
-          text: 'Sorry—AI response failed. Please try again.',
-          memberData: AI_MEMBER,
-        };
+        copy[copy.length - 1] = { event: 'message', text: 'Sorry — AI response failed. Please try again.', memberData: AI_MEMBER };
         return copy;
       });
     } finally {
@@ -170,99 +124,94 @@ const Chat = () => {
     }
   };
 
-  /** RENDER **/
   return (
-    <Stack className="chatting" >
-      {openButton ? (
+    <div className="vl-chat">
+      {/* FAB trigger */}
+      {openButton && (
         <button
-          className="chat-button"
-          onClick={handleOpenChat}
+          className={`vl-chat__fab ${open ? 'vl-chat__fab--active' : ''}`}
+          onClick={() => setOpen((p) => !p)}
           aria-label={open ? 'Close chat' : 'Open chat'}
-          title={open ? 'Close chat' : 'Open chat'}
         >
           {open ? (
-            <CloseFullscreenIcon />
+            <CloseIcon style={{ fontSize: 22, color: '#fff' }} />
           ) : (
-            <img src="/img/icons/chat-icon.png" alt="Chat" className="chat-icon-img" style={{ width: '82px', height: '102px' }} />	
+            <>
+              <AutoAwesomeIcon style={{ fontSize: 22, color: '#d4af37' }} />
+              {unread > 0 && <span className="vl-chat__badge">{unread}</span>}
+            </>
           )}
         </button>
-      ) : null}
+      )}
 
-      <Stack className={`chat-frame ${open ? 'open' : ''}`}>
-        <Box className={'chat-top'} component={'div'}>
-          <div style={{ fontFamily: 'Playfair Display, serif' }}>Veloura AI Chat</div>
-          <RippleBadge style={{ margin: '-10px 0 0 2px' }} badgeContent={onlineUsers} />
-        </Box>
+      {/* Chat panel */}
+      <div className={`vl-chat__panel ${open ? 'vl-chat__panel--open' : ''}`} role="dialog" aria-label="Veloura AI Chat">
+        {/* Header */}
+        <div className="vl-chat__header">
+          <div className="vl-chat__header-icon">
+            <AutoAwesomeIcon style={{ fontSize: 18, color: '#d4af37' }} />
+          </div>
+          <div className="vl-chat__header-text">
+            <span className="vl-chat__header-title">Veloura Assistant</span>
+            <span className="vl-chat__header-sub">
+              <span className="vl-chat__online-dot" /> AI · Always available
+            </span>
+          </div>
+          <button className="vl-chat__header-close" onClick={() => setOpen(false)} aria-label="Close">
+            <CloseIcon style={{ fontSize: 18 }} />
+          </button>
+        </div>
 
-        <Box className={'chat-content'} id="chat-content" ref={chatContentRef} component={'div'}>
+        {/* Messages */}
+        <div className="vl-chat__body" ref={chatContentRef}>
           <ScrollableFeed>
-            <Stack className={'chat-main'}>
-              <Box flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
-                <div className={'welcome'}>Welcome to Live chat!</div>
-              </Box>
+            <div className="vl-chat__messages">
+              {messagesList.map((msg, i) => {
+                const isUser = msg.memberData?._id === user?._id;
+                const isAI   = msg.memberData?._id === AI_MEMBER._id;
+                const isStreaming = isAI && streaming && i === messagesList.length - 1;
 
-              {messagesList?.map((ele: MessagePayload, index) => {
-                const { text, memberData } = ele;
-                const memberImage = "/img/icons/ai.png"; // Default AI image
-
-                const isMe = memberData?._id === user?._id;
-                const isAI = memberData?._id === AI_MEMBER._id;
-
-                return isMe ? (
-                  <Box
-                    key={index}
-                    component={'div'}
-                    flexDirection={'row'}
-                    style={{ display: 'flex' }}
-                    alignItems={'flex-end'}
-                    justifyContent={'flex-end'}
-                    sx={{ m: '10px 0px' }}
-                  >
-                    <div className={'msg-right'}>{text}</div>
-                  </Box>
-                ) : (
-                  <Box
-                    key={index}
-                    flexDirection={'row'}
-                    style={{ display: 'flex' }}
-                    sx={{ m: '10px 0px' }}
-                    component={'div'}
-                  >
-                    <Avatar alt={memberData?.memberNick || 'User'} src={memberImage} />
-                    <div
-                      className={`msg-left ${
-                        isAI && streaming && index === messagesList.length - 1 ? 'typing' : ''
-                      }`}
-                    >
-                      {text || '…'}
+                return (
+                  <div key={i} className={`vl-chat__row ${isUser ? 'vl-chat__row--user' : 'vl-chat__row--ai'}`}>
+                    {isAI && (
+                      <div className="vl-chat__avatar">
+                        <AutoAwesomeIcon style={{ fontSize: 14, color: '#d4af37' }} />
+                      </div>
+                    )}
+                    <div className={`vl-chat__bubble ${isUser ? 'vl-chat__bubble--user' : 'vl-chat__bubble--ai'} ${isStreaming && !msg.text ? 'vl-chat__bubble--typing' : ''}`}>
+                      {isStreaming && !msg.text ? (
+                        <span className="vl-chat__dots">
+                          <span /><span /><span />
+                        </span>
+                      ) : (
+                        msg.text || '…'
+                      )}
                     </div>
-                  </Box>
+                  </div>
                 );
               })}
-            </Stack>
+            </div>
           </ScrollableFeed>
-        </Box>
+        </div>
 
-        <Box className={'chat-bott'} component={'div'}>
+        {/* Input */}
+        <div className="vl-chat__footer">
           <input
             ref={textInput}
-            autoFocus={true}
-            disabled={!open || streaming}
-            placeholder={streaming ? 'Generating…' : 'Type message'}
-            type={'text'}
-            name={'message'}
-            className={'msg-input'}
+            className="vl-chat__input"
+            type="text"
+            placeholder={streaming ? 'Generating…' : 'Ask about jewelry, sizing, care…'}
             value={messageInput}
             onChange={getInputMessageHandler}
             onKeyDown={getKeyHandler}
+            disabled={!open || streaming}
+            autoComplete="off"
           />
-          <button className={'send-msg-btn'} onClick={onClickHandler} disabled={streaming}>
-            <SendIcon style={{ color: '#fff' }} />
+          <button className="vl-chat__send" onClick={onClickHandler} disabled={streaming || !messageInput.trim()} aria-label="Send">
+            <SendIcon style={{ fontSize: 18 }} />
           </button>
-        </Box>
-      </Stack>
-    </Stack>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default Chat;
+}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Stack, Box, Typography } from '@mui/material';
 import Link from 'next/link';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import IconButton from '@mui/material/IconButton';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -42,7 +42,7 @@ const StoreCard = (props: StoreCardProps) => {
 	const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
 	const imagePath: string = store?.memberImage
-		? `${process.env.REACT_APP_API_URL}/${store?.memberImage}`
+		? resolveImageUrl(store.memberImage)
 		: '/img/profile/defaultStore.jpg';
 
 	const handleLikeClick = (e: React.MouseEvent, productId: string) => {

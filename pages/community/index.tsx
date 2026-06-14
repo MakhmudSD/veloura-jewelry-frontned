@@ -191,7 +191,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 									</Stack>
 
 									{/* Horizontal category filter chips */}
-									<Stack className="category-chips">
+									<div className="category-chips">
 										{(['FREE', 'RECOMMEND', 'NEWS', 'HUMOR'] as const).map((cat) => (
 											<button
 												key={cat}
@@ -201,7 +201,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 												{cat === 'FREE' ? 'Free Board' : cat === 'RECOMMEND' ? 'Recommendation' : cat === 'HUMOR' ? 'Humor' : 'News'}
 											</button>
 										))}
-									</Stack>
+									</div>
 
 									<TabPanel value="FREE">
 										<Stack className="list-box">

@@ -89,6 +89,90 @@
       }
     }
   
+    /* ── Payment panel ── */
+    .co-pay {
+      margin-top: 24px;
+
+      &__demo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        background: rgba(180, 140, 30, 0.12);
+        border: 1px solid rgba(180, 140, 30, 0.35);
+        color: #b4720a;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        font-family: 'Inter', sans-serif;
+      }
+
+      &__title {
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        margin-bottom: 14px !important;
+        color: #3c2f2f !important;
+      }
+
+      &__demo-cards {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      &__demo-fill {
+        font-size: 11px;
+        padding: 5px 12px;
+        border-radius: 16px;
+        background: #f7f2ea;
+        border: 1px solid #d8cfc2;
+        color: #7a6748;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        transition: background 0.18s, border-color 0.18s;
+
+        &:hover {
+          background: #ece6da;
+          border-color: #b8a282;
+        }
+      }
+
+      &__card-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        font-family: 'Inter', sans-serif;
+
+        &--visa {
+          background: #eaf0ff;
+          border: 1px solid #c0d0f5;
+          color: #1a3ab8;
+        }
+        &--mastercard {
+          background: #fff3ea;
+          border: 1px solid #f5c8a0;
+          color: #c44800;
+        }
+        &--amex {
+          background: #eafaf4;
+          border: 1px solid #a0d8c0;
+          color: #006b3c;
+        }
+      }
+    }
+
     .checkout-summary {
       flex: 1;
       padding: 24px;

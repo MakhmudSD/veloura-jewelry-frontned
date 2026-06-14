@@ -636,7 +636,310 @@ body::-webkit-scrollbar {
 	}
 }
 
-.chatting {
+/* ── Veloura Chat (dark luxury glassmorphism) ── */
+.vl-chat {
+	// FAB
+	.vl-chat__fab {
+		position: fixed;
+		bottom: 28px;
+		right: 28px;
+		width: 54px;
+		height: 54px;
+		border-radius: 50%;
+		background: linear-gradient(145deg, #1a1208, #100c07);
+		border: 1px solid rgba(212, 175, 55, 0.45);
+		box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 175, 55, 0.12);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		z-index: 1300;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+		&:hover {
+			transform: scale(1.07);
+			box-shadow: 0 10px 32px rgba(212, 175, 55, 0.22), inset 0 1px 0 rgba(212, 175, 55, 0.18);
+		}
+
+		&--active {
+			background: linear-gradient(145deg, #1f1810, #100c07);
+		}
+	}
+
+	.vl-chat__badge {
+		position: absolute;
+		top: -4px;
+		right: -4px;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: #d4af37;
+		color: #100c07;
+		font-size: 10px;
+		font-weight: 700;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 2px solid #100c07;
+	}
+
+	// Panel
+	.vl-chat__panel {
+		position: fixed;
+		bottom: 96px;
+		right: 28px;
+		width: 370px;
+		height: 540px;
+		display: flex;
+		flex-direction: column;
+		background: rgba(14, 10, 4, 0.92);
+		backdrop-filter: blur(24px) saturate(1.4);
+		-webkit-backdrop-filter: blur(24px) saturate(1.4);
+		border-radius: 20px;
+		border: 1px solid rgba(212, 175, 55, 0.22);
+		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(212, 175, 55, 0.1);
+		z-index: 1299;
+		overflow: hidden;
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(16px) scale(0.97);
+		transition: opacity 0.28s ease, transform 0.28s ease;
+
+		&--open {
+			opacity: 1;
+			pointer-events: all;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	// Header
+	.vl-chat__header {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 16px 18px;
+		border-bottom: 1px solid rgba(212, 175, 55, 0.14);
+		background: linear-gradient(180deg, rgba(212, 175, 55, 0.06), transparent);
+		flex-shrink: 0;
+	}
+
+	.vl-chat__header-icon {
+		width: 34px;
+		height: 34px;
+		border-radius: 50%;
+		background: rgba(212, 175, 55, 0.1);
+		border: 1px solid rgba(212, 175, 55, 0.3);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.vl-chat__header-text {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.vl-chat__header-title {
+		font-family: 'Judson', serif;
+		font-size: 15px;
+		font-weight: 700;
+		color: #f5f0e1;
+		letter-spacing: 0.04em;
+	}
+
+	.vl-chat__header-sub {
+		font-size: 11px;
+		color: rgba(212, 175, 55, 0.65);
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		letter-spacing: 0.02em;
+	}
+
+	.vl-chat__online-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #4caf84;
+		box-shadow: 0 0 6px rgba(76, 175, 132, 0.6);
+	}
+
+	.vl-chat__header-close {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.06);
+		border: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: rgba(245, 240, 225, 0.5);
+		cursor: pointer;
+		transition: background 0.2s, color 0.2s;
+		flex-shrink: 0;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.12);
+			color: #f5f0e1;
+		}
+	}
+
+	// Body / messages
+	.vl-chat__body {
+		flex: 1;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.vl-chat__messages {
+		padding: 16px 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.vl-chat__row {
+		display: flex;
+		align-items: flex-end;
+		gap: 8px;
+
+		&--user {
+			flex-direction: row-reverse;
+		}
+	}
+
+	.vl-chat__avatar {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: rgba(212, 175, 55, 0.1);
+		border: 1px solid rgba(212, 175, 55, 0.28);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.vl-chat__bubble {
+		max-width: 76%;
+		padding: 10px 14px;
+		font-size: 13.5px;
+		line-height: 1.55;
+		word-break: break-word;
+		white-space: pre-wrap;
+
+		&--ai {
+			background: rgba(212, 175, 55, 0.07);
+			border: 1px solid rgba(212, 175, 55, 0.18);
+			border-radius: 16px 16px 16px 4px;
+			color: #e8dfc8;
+		}
+
+		&--user {
+			background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(180, 140, 30, 0.15));
+			border: 1px solid rgba(212, 175, 55, 0.3);
+			border-radius: 16px 16px 4px 16px;
+			color: #f5f0e1;
+		}
+
+		&--typing {
+			min-width: 52px;
+		}
+	}
+
+	// Typing dots
+	.vl-chat__dots {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 0;
+
+		span {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: rgba(212, 175, 55, 0.6);
+			animation: vl-dot-pulse 1.2s ease-in-out infinite;
+
+			&:nth-child(2) { animation-delay: 0.2s; }
+			&:nth-child(3) { animation-delay: 0.4s; }
+		}
+	}
+
+	// Footer / input
+	.vl-chat__footer {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 14px 16px;
+		border-top: 1px solid rgba(212, 175, 55, 0.12);
+		background: rgba(0, 0, 0, 0.2);
+		flex-shrink: 0;
+	}
+
+	.vl-chat__input {
+		flex: 1;
+		height: 40px;
+		padding: 0 14px;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(212, 175, 55, 0.2);
+		border-radius: 20px;
+		font-size: 13px;
+		color: #f5f0e1;
+		outline: none;
+		transition: border-color 0.2s, box-shadow 0.2s;
+		font-family: 'Inter', sans-serif;
+
+		&::placeholder {
+			color: rgba(245, 240, 225, 0.3);
+		}
+
+		&:focus {
+			border-color: rgba(212, 175, 55, 0.5);
+			box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.08);
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	.vl-chat__send {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #d4af37, #b8902a);
+		border: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #100c07;
+		cursor: pointer;
+		flex-shrink: 0;
+		transition: transform 0.2s, opacity 0.2s;
+
+		&:hover:not(:disabled) {
+			transform: scale(1.07);
+		}
+
+		&:disabled {
+			opacity: 0.35;
+			cursor: not-allowed;
+		}
+	}
+}
+
+@keyframes vl-dot-pulse {
+	0%, 80%, 100% { transform: scale(0.65); opacity: 0.4; }
+	40%            { transform: scale(1);    opacity: 1; }
+}
+
+/* ── legacy .chatting kept for reference (no longer rendered) ── */
+.chatting--legacy {
 	// palette
 	$ink: #2e2424;
 	$text: #3a2f2a;
