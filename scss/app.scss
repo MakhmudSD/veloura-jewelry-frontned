@@ -1,16 +1,24 @@
 /** IMPORTS **/
 @import 'variables.scss';
 @import 'reset.scss';
+@import 'animations.scss';
 
 a {
 	white-space: nowrap;
 	text-decoration: none;
 	color: #212121;
+	transition: color 0.2s ease, opacity 0.2s ease;
+
+	&:hover {
+		opacity: 0.8;
+	}
 }
 button {
 	text-transform: none;
 	box-shadow: none;
 	padding: 0;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
 }
 button.outline {
 	border: 1px solid #eee;
@@ -24,16 +32,20 @@ p {
 }
 body {
 	font-family: $font;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+
 	&::-webkit-scrollbar {
-		width: 9px;
+		width: 7px;
 	}
 	&::-webkit-scrollbar-thumb {
 		height: 30%;
-		background: #bdbdbd;
+		background: linear-gradient(to bottom, #c9a227, #d4af37);
 		border-radius: 10px;
 	}
 	&::-webkit-scrollbar-track {
-		background: #eee;
+		background: #f4f0eb;
 	}
 
 	.MuiPopover-paper {
@@ -61,4 +73,17 @@ hr {
 		margin: 0 auto;
 		display: flex;
 	}
+}
+
+/** FOCUS — accessibility + luxury feel **/
+:focus-visible {
+	outline: 2px solid $gold;
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+/** SELECTION highlight **/
+::selection {
+	background: rgba(212, 175, 55, 0.22);
+	color: $charcoal;
 }
