@@ -336,25 +336,35 @@
 						display: flex;
 						flex-direction: column;
 						align-items: center;
-						width: 390px; // original size
+						width: 390px;
 						height: 493px;
 						border: 1px solid #2a1f1c;
 						background: #e4e3da;
 						border-radius: 12px;
 						overflow: hidden;
-						transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-					  
+						transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+						            box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
 						&:hover {
-						  transform: translateY(-4px);
-						  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-					  
+						  transform: translateY(-6px);
+						  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+
 						  .btn-group {
 							opacity: 1;
 							visibility: visible;
 							transform: translateX(-50%) translateY(0);
 						  }
+
+						  .glass-overlay {
+							transform: translateY(0);
+						  }
+
+						  .main-img,
+						  .hover-img {
+							transform: scale(1.04);
+						  }
 						}
-					  
+
 						.card-img {
 						  position: relative;
 						  width: 100%;
@@ -362,7 +372,7 @@
 						  overflow: hidden;
 						  border-radius: 12px;
 						  cursor: pointer;
-					  
+
 						  .main-img,
 						  .hover-img {
 							position: absolute;
@@ -371,26 +381,75 @@
 							width: 100%;
 							height: 100%;
 							object-fit: cover;
-							transition: opacity 0.4s ease-in-out, transform 0.4s ease;
+							transition: opacity 0.4s ease-in-out, transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 						  }
-					  
+
 						  .main-img {
 							opacity: 1;
 							z-index: 1;
 						  }
-					  
+
 						  .hover-img {
 							opacity: 0;
 							z-index: 2;
 						  }
-					  
+
 						  &:hover {
 							.main-img {
-							  opacity: 0;
+							  opacity: 0.15;
 							}
-					  
+
 							.hover-img {
 							  opacity: 1;
+							}
+						  }
+
+						  /* Glassmorphism overlay — slides up from bottom on hover */
+						  .glass-overlay {
+							position: absolute;
+							bottom: 0;
+							left: 0;
+							right: 0;
+							z-index: 4;
+							transform: translateY(100%);
+							transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+							background: rgba(255, 255, 255, 0.68);
+							backdrop-filter: blur(14px);
+							-webkit-backdrop-filter: blur(14px);
+							border-top: 1px solid rgba(255, 255, 255, 0.45);
+							padding: 14px 16px;
+							display: flex;
+							flex-direction: column;
+							align-items: center;
+							gap: 10px;
+
+							.glass-price {
+							  font-family: 'Judson', serif;
+							  font-size: 18px;
+							  font-weight: 700;
+							  color: #1a1a1a;
+							  letter-spacing: 0.5px;
+							}
+
+							.glass-cta {
+							  width: 100%;
+							  height: 38px;
+							  background: #1a1a1a;
+							  color: #fff;
+							  border: none;
+							  border-radius: 20px;
+							  font-family: 'Judson', serif;
+							  font-size: 12px;
+							  font-weight: 700;
+							  letter-spacing: 2px;
+							  text-transform: uppercase;
+							  cursor: pointer;
+							  transition: background 0.25s ease, color 0.25s ease;
+
+							  &:hover {
+								background: #d4af37;
+								color: #fff;
+							  }
 							}
 						  }
 						}

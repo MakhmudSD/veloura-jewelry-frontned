@@ -3,6 +3,15 @@
 @import 'reset.scss';
 @import 'animations.scss';
 
+/* Display heading letter-spacing (task 3) */
+h1, h2, h3,
+.v-section-title,
+.brands-top p,
+.trends-top span,
+.info-box .left span {
+  letter-spacing: 0.04em;
+}
+
 a {
 	white-space: nowrap;
 	text-decoration: none;

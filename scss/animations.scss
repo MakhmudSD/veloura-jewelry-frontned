@@ -68,46 +68,49 @@ html {
    Apply in JSX/TSX to trigger entrance effects.
    e.g. className="v-fade-up v-delay-1"
    ============================================= */
+/* IntersectionObserver-driven entrance — classes applied by useScrollReveal hook */
 .v-fade-up {
   opacity: 0;
-  animation: veloura-fade-up 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  transform: translateY(28px);
+  transition: opacity 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &.v-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .v-fade-in {
   opacity: 0;
-  animation: veloura-fade-in 0.6s ease forwards;
+  transition: opacity 0.6s ease;
+
+  &.v-revealed {
+    opacity: 1;
+  }
 }
 
 .v-scale-in {
   opacity: 0;
-  animation: veloura-scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform: scale(0.96);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.v-revealed {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Stagger delays (add alongside v-fade-up / v-scale-in) */
-.v-delay-1  { animation-delay: 0.1s; }
-.v-delay-2  { animation-delay: 0.2s; }
-.v-delay-3  { animation-delay: 0.35s; }
-.v-delay-4  { animation-delay: 0.5s; }
-.v-delay-5  { animation-delay: 0.65s; }
+/* Stagger delays — add transition-delay via these classes */
+.v-delay-1  { transition-delay: 0.1s; }
+.v-delay-2  { transition-delay: 0.2s; }
+.v-delay-3  { transition-delay: 0.35s; }
+.v-delay-4  { transition-delay: 0.5s; }
+.v-delay-5  { transition-delay: 0.65s; }
 
-/* =============================================
-   SECTION ENTRANCE — uses @starting-style for
-   modern browsers; falls back gracefully.
-   ============================================= */
-.home-page > * {
-  /* Each direct child section fades up on mount */
-  animation: veloura-fade-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-
-  &:nth-child(1) { animation-delay: 0s; }
-  &:nth-child(2) { animation-delay: 0.08s; }
-  &:nth-child(3) { animation-delay: 0.16s; }
-  &:nth-child(4) { animation-delay: 0.24s; }
-  &:nth-child(5) { animation-delay: 0.32s; }
-  &:nth-child(6) { animation-delay: 0.40s; }
-  &:nth-child(7) { animation-delay: 0.48s; }
-  &:nth-child(8) { animation-delay: 0.56s; }
-  &:nth-child(9) { animation-delay: 0.64s; }
-}
+/* Section entrances are now driven by useScrollReveal (IntersectionObserver).
+   Each section wrapper gets .v-fade-up; the hook adds .v-revealed on entry. */
 
 /* =============================================
    LUXURY INTERACTIVE POLISH

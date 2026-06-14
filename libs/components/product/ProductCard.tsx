@@ -108,7 +108,7 @@ const ProductCard = ({
 	if (device === 'mobile') return <div>Product CARD</div>;
 
 	return (
-		<div className={`card-config ${recentlyVisited ? 'recently-visited' : ''}`}>
+		<div className={`card-config v-card-lift ${recentlyVisited ? 'recently-visited' : ''}`}>
 			{/* IMAGE */}
 			<Box className="card-img" onClick={() => pushDetailHandler(product._id)}>
 				<img className="main-img" src={image1} alt={product.productTitle} />
@@ -118,6 +118,17 @@ const ProductCard = ({
 						<Typography className="badge-text">{product.productCategory}</Typography>
 					</Box>
 				)}
+
+				{/* Glassmorphism hover overlay — price + CTA slides up from bottom */}
+				{!recentlyVisited && (
+					<div className="glass-overlay" onClick={(e) => e.stopPropagation()}>
+						<Typography className="glass-price">₩{formatterStr(product.productPrice)}</Typography>
+						<button className="glass-cta" onClick={handleAddClick}>
+							Add to Cart
+						</button>
+					</div>
+				)}
+
 				{!recentlyVisited && (
 					<div className="btn-group">
 						<Box className="views">

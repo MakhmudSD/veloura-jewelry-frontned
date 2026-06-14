@@ -7,10 +7,78 @@
   box-sizing: border-box;
 }
 
-/* Prevent horizontal overflow at the root level */
-#mobile-wrap {
+/* Prevent horizontal overflow at the root level — covers 375px and below */
+#mobile-wrap,
+.mobile-topbar,
+.mobile-marquee,
+.mobile-menu {
   overflow-x: hidden;
+  max-width: 100vw;
   -webkit-overflow-scrolling: touch;
+}
+
+/* ===== Fluid card grids (replace fixed px widths on mobile) ===== */
+#mobile-wrap {
+  .card-config,
+  .trend-card-box,
+  .top-store-card,
+  .vertical-card,
+  .nav-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .card-box,
+  .card-wrap,
+  .card-wrapper {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+}
+
+/* ===== Footer column stacking on mobile ===== */
+#footer {
+  .footer-container {
+    .main {
+      flex-direction: column !important;
+      gap: 24px;
+
+      .left,
+      .right {
+        width: 100% !important;
+      }
+
+      .right {
+        flex-direction: column !important;
+        gap: 24px;
+
+        .categories,
+        .resources,
+        .useful-links {
+          width: 100% !important;
+        }
+      }
+    }
+
+    .row1 {
+      flex-direction: column !important;
+      gap: 16px;
+    }
+
+    .row3 {
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 12px;
+    }
+
+    .payment-cards {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
 }
 
 /* Mobile typography scale */
