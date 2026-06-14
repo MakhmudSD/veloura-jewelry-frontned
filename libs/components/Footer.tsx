@@ -197,49 +197,47 @@ const Footer = () => {
 					</Stack>
 				</Stack>
 
-				<Stack className={'second'}>
-					<Box className="divider"></Box>
-
-					<Stack className="row1">
-						<Stack className="content">
-							<Stack className="icon">
-								<img src="/img/footer/inquiry.png" alt="Inquiry Icon" />
-							</Stack>
-							<Stack className="info">
-								<h1>{t('Having quires?')}</h1>
-								<p>{t('Feel free to reach out to us via Chat in our website')}</p>
-							</Stack>
+				{/* Contact strip — direct child of footer-container, matches CSS scope */}
+				<Stack className="row1">
+					<Stack className="content">
+						<Stack className="icon">
+							<img src="/img/footer/inquiry.png" alt="Inquiry Icon" />
 						</Stack>
-						<Stack className="content">
-							<Stack className="icon">
-								<img src="/img/footer/location.png" alt="Location Icon" />
-							</Stack>
-							<Stack className="info">
-								<h1>{t('Locate Us')}</h1>
-								<p>{t('1234 Veloura St, Suite 100, Seoul City, South Korea')}</p>
-							</Stack>
-						</Stack>
-						<Stack className="content">
-							<Stack className="icon">
-								<img src="/img/footer/call.png" alt="Call Icon" />
-							</Stack>
-							<Stack className="info">
-								<h1>{t('Call Us Today')}</h1>
-								<p>{t('For any inquiries, please contact us at 010-9380-7522')}</p>
-							</Stack>
-						</Stack>
-						<Stack className="content">
-							<Stack className="icon">
-								<img src="/img/footer/inbox.png" alt="Inbox Icon" />
-							</Stack>
-							<Stack className="info">
-								<h1>{t('Get In To Inbox')}</h1>
-								<p>{t('For any inquiries, please contact us at support@veloura.com')}</p>
-							</Stack>
+						<Stack className="info">
+							<h1>{t('Having queries?')}</h1>
+							<p>{t('Feel free to reach out to us via Chat in our website')}</p>
 						</Stack>
 					</Stack>
-					<Box className="divider"></Box>
+					<Stack className="content">
+						<Stack className="icon">
+							<img src="/img/footer/location.png" alt="Location Icon" />
+						</Stack>
+						<Stack className="info">
+							<h1>{t('Locate Us')}</h1>
+							<p>{t('1234 Veloura St, Suite 100, Seoul City, South Korea')}</p>
+						</Stack>
+					</Stack>
+					<Stack className="content">
+						<Stack className="icon">
+							<img src="/img/footer/call.png" alt="Call Icon" />
+						</Stack>
+						<Stack className="info">
+							<h1>{t('Call Us')}</h1>
+							<p>+82 10-9380-7522</p>
+						</Stack>
+					</Stack>
+					<Stack className="content">
+						<Stack className="icon">
+							<img src="/img/footer/inbox.png" alt="Inbox Icon" />
+						</Stack>
+						<Stack className="info">
+							<h1>{t('Email Us')}</h1>
+							<p>support@veloura.com</p>
+						</Stack>
+					</Stack>
+				</Stack>
 
+				<Stack className={'second'}>
 					<Stack className="row2">
 						<Box className="divider" />
 

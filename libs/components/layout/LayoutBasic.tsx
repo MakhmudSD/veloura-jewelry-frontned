@@ -10,9 +10,12 @@ import Chat from '../Chat';
 import { useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { useTranslation } from 'next-i18next';
+import dynamic from 'next/dynamic';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+
+const LuxuryPageBanner = dynamic(() => import('../common/LuxuryPageBanner'), { ssr: false });
 
 const withLayoutBasic = (Component: any) => {
 	return (props: any) => {
@@ -128,19 +131,12 @@ const withLayoutBasic = (Component: any) => {
 							<Top />
 						</Stack>
 
-						<Stack
-							className={`header-basic ${authHeader && 'auth'}`}
-							style={{
-								backgroundImage: `url(${memoizedValues.bgImage})`,
-								backgroundSize: 'cover',
-								boxShadow: 'inset 10px 40px 150px 40px rgb(24 22 36)',
-							}}
-						>
-							<Stack className={'container'}>
-								<strong>{t(memoizedValues.title)}</strong>
-								<span>{t(memoizedValues.desc)}</span>
-							</Stack>
-						</Stack>
+						{!authHeader && memoizedValues.title && (
+							<LuxuryPageBanner
+								title={t(memoizedValues.title)}
+								breadcrumb={memoizedValues.desc ? t(memoizedValues.desc) : undefined}
+							/>
+						)}
 
 						<Stack id={'main'}>
 							<Component {...props} />
