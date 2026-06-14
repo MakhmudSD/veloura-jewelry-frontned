@@ -202,39 +202,37 @@
 					}
 				}
 
-				.card-box {
+				/* Infinite marquee wrapper */
+				.brands-marquee-wrapper {
 					width: 100%;
-					display: flex;
-					flex-wrap: wrap;
-					justify-content: center;
-					flex-direction: row;
-					max-width: 1300px;
-					gap: 20px;
-					padding: 20px;
+					overflow: hidden;
+					padding: 10px 0 20px;
 
+					&:hover .brands-marquee-track {
+						animation-play-state: paused;
+					}
+				}
+
+				.brands-marquee-track {
+					display: flex;
+					flex-direction: row;
+					flex-wrap: nowrap;
+					gap: 40px;
+					width: max-content;
+					animation: brands-scroll 22s linear infinite;
 
 					.brand-item {
-						width: 209px;
+						width: 180px;
+						flex-shrink: 0;
 						display: flex;
 						flex-direction: column;
 						align-items: center;
 						gap: 12px;
 						cursor: pointer;
-						opacity: 0;
-						transform: translateY(20px);
-						animation: fadeUp 0.8s ease forwards;
-
-						&:nth-child(2) {
-							animation-delay: 0.7s;
-						}
-
-						&:nth-child(3) {
-							animation-delay: 0.9s;
-						}
 
 						.brand-card {
-							width: 160px;
-							height: 175px;
+							width: 150px;
+							height: 165px;
 							border-radius: 20%;
 							overflow: hidden;
 							border: 2px solid #e0e0e0;
@@ -246,14 +244,13 @@
 
 							&:hover {
 								transform: scale(1.1);
-								box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+								box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 							}
 
 							img {
 								width: 100%;
 								height: 100%;
 								object-fit: cover;
-								transform: scale(1);
 								transition: transform 0.4s ease;
 							}
 
@@ -263,7 +260,7 @@
 						}
 
 						.brand-heading {
-							font-size: 26px;
+							font-size: 22px;
 							font-family: "Judson";
 							font-weight: 400;
 							text-align: center;
@@ -271,15 +268,16 @@
 							text-transform: capitalize;
 						}
 					}
+				}
 
+				@keyframes brands-scroll {
+					0%   { transform: translateX(0); }
+					100% { transform: translateX(-50%); }
+				}
 
-					.empty-list {
-						width: 100%;
-						height: 280px;
-						display: flex;
-						justify-content: center;
-						align-items: center;
-					}
+				/* Keep old .card-box for fallback */
+				.card-box {
+					display: none; /* replaced by marquee */
 				}
 			}
 		}
@@ -505,8 +503,8 @@
 						flex-direction: column;
 						justify-content: space-between;
 						align-items: center;
-						width: 327px;
-						height: 423px;
+						width: 380px;
+						height: 480px;
 						margin-top: 10px;
 						margin-left: 40px;
 						flex-shrink: 0;
@@ -923,6 +921,26 @@
 							background-position: center;
 							border-radius: 5%;
 							position: relative;
+							overflow: hidden;
+							transition: transform 0.4s ease;
+
+							&::after {
+								content: '';
+								position: absolute;
+								inset: 0;
+								background: rgba(180, 120, 40, 0);
+								transition: background 0.4s ease;
+								border-radius: 5%;
+								pointer-events: none;
+							}
+
+							&:hover {
+								transform: scale(1.03);
+
+								&::after {
+									background: rgba(180, 120, 40, 0.18);
+								}
+							}
 
 							.title {
 								margin-top: 430px;

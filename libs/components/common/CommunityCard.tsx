@@ -23,11 +23,15 @@ const CommunityCard = (props: CommunityCardProps) => {
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
 
-	// ✅ Extract first image from content
 	const getFirstImageFromContent = (html: string): string | null => {
 		const match = html?.match(/<img[^>]+src="([^">]+)"/);
 		return match ? match[1] : null;
 	};
+
+	const readTime = Math.max(
+		1,
+		Math.ceil((boardArticle.articleContent || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length / 200),
+	);
 
 	const contentImage = getFirstImageFromContent(boardArticle.articleContent || '');
 	const imagePath: string = contentImage
@@ -64,6 +68,7 @@ const CommunityCard = (props: CommunityCardProps) => {
 			>
 				<Stack className="image-box">
 					<img src={imagePath} alt="Article Image" className="card-img" />
+					<Box className="read-time-badge">{readTime} min read</Box>
 				</Stack>
 
 				<Stack className="desc-box" sx={{ marginTop: '-20px' }}>

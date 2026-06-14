@@ -263,8 +263,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const latestUser = [...messages].reverse().find((m) => m.role === 'user')?.content || '';
     const siteContext = await retrieveSiteContext(req, latestUser, SITE_ORIGIN, GRAPHQL_URL);
 
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is missing in .env.local');
+    const openaiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+    if (!openaiKey) {
+      throw new Error('OPENAI_API_KEY (or NEXT_PUBLIC_OPENAI_API_KEY) is missing in .env.local');
     }
 
     const input = siteContext ? [{ role: 'system', content: siteContext }, ...messages] : messages;
@@ -272,7 +273,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const upstream = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${openaiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

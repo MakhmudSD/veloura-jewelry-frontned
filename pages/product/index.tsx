@@ -11,6 +11,7 @@ import {
 	OutlinedInput,
 	IconButton,
 	Tooltip,
+	Skeleton,
 } from '@mui/material';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -251,7 +252,15 @@ const ProductList: NextPage = ({ initialInput, ...props }: any) => {
 				<Stack className="product-page">
 					<Stack className="main-config">
 						<Stack className="list-config">
-							{products.length === 0 ? (
+							{getProductsLoading && products.length === 0 ? (
+								Array.from({ length: 9 }).map((_, i) => (
+									<Box key={i} className="product-skeleton">
+										<Skeleton variant="rectangular" width="100%" height={260} sx={{ borderRadius: '12px' }} />
+										<Skeleton width="70%" height={28} sx={{ mt: 1 }} />
+										<Skeleton width="40%" height={22} />
+									</Box>
+								))
+							) : products.length === 0 ? (
 								<div className="no-data">No Products Found! ✨</div>
 							) : (
 								products.map((product: Product) => (

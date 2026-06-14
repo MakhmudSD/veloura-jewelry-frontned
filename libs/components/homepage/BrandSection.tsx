@@ -177,43 +177,35 @@ const BrandsSection = () => {
             </Typography>
           </Box>
 
-          <Stack
-            className="card-box"
+          {/* Infinite scroll marquee */}
+          <Box
+            className="brands-marquee-wrapper"
             style={{
               opacity: 0,
-              transform: 'translateY(28px)',
-              transition: 'opacity 0.8s ease, transform 0.8s ease',
+              transition: 'opacity 0.8s ease',
               transitionDelay: '400ms',
-              ...(revealed ? { opacity: 1, transform: 'translateY(0)' } : {}),
+              ...(revealed ? { opacity: 1 } : {}),
             }}
           >
-            {BRANDS.map((brand, i) => (
-              <Box
-                key={brand.name}
-                className="brand-item"
-                style={{
-                  opacity: 0,
-                  transform: 'translateY(20px)',
-                  transition: 'opacity 0.6s ease, transform 0.6s ease',
-                  transitionDelay: `${500 + i * 100}ms`,
-                  ...(revealed ? { opacity: 1, transform: 'translateY(0)' } : {}),
-                }}
-              >
-                <Box
-                  className="brand-card interactive"
-                  onClick={() => handleClick(brand.name)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e: any) => {
-                    if (e.key === 'Enter' || e.key === ' ') handleClick(brand.name);
-                  }}
-                >
-                  <img src={brand.logoUrl} alt={brand.name} draggable="false" />
+            <Stack className="brands-marquee-track" aria-hidden="false">
+              {[...BRANDS, ...BRANDS].map((brand, i) => (
+                <Box key={`${brand.name}-${i}`} className="brand-item">
+                  <Box
+                    className="brand-card interactive"
+                    onClick={() => handleClick(brand.name)}
+                    role="button"
+                    tabIndex={i < BRANDS.length ? 0 : -1}
+                    onKeyDown={(e: any) => {
+                      if (e.key === 'Enter' || e.key === ' ') handleClick(brand.name);
+                    }}
+                  >
+                    <img src={brand.logoUrl} alt={brand.name} draggable="false" />
+                  </Box>
+                  <Typography className="brand-heading">{brand.name}</Typography>
                 </Box>
-                <Typography className="brand-heading">{brand.name}</Typography>
-              </Box>
-            ))}
-          </Stack>
+              ))}
+            </Stack>
+          </Box>
         </Stack>
       </Stack>
 

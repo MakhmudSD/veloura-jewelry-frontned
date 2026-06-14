@@ -96,3 +96,61 @@ hr {
 	background: rgba(212, 175, 55, 0.22);
 	color: $charcoal;
 }
+
+/** PAGE TRANSITIONS **/
+.page-transition {
+	animation: page-enter 0.35s ease both;
+}
+.page-exit {
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+@keyframes page-enter {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/** GLOBAL SECTION PADDING **/
+.trend-products,
+.category-products,
+.brands-section,
+.top-stores,
+.community-boards {
+	padding-top: 80px;
+	padding-bottom: 80px;
+}
+
+/** GLOBAL BUTTON GOLD HOVER **/
+button.MuiButton-contained,
+.MuiButton-containedPrimary {
+	background-color: #d4af37 !important;
+	color: #fff !important;
+
+	&:hover {
+		background-color: #b8960b !important;
+	}
+}
+
+/** H1/H2 PREMIUM SIZES **/
+h1 {
+	font-size: clamp(32px, 4vw, 56px);
+	line-height: 1.15;
+}
+h2 {
+	font-size: clamp(24px, 3vw, 42px);
+	line-height: 1.2;
+}
+
+/** PRODUCT SKELETON GRID **/
+.product-skeleton {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 8px;
+}

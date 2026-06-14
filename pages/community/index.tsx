@@ -190,6 +190,19 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 										</Button>
 									</Stack>
 
+									{/* Horizontal category filter chips */}
+									<Stack className="category-chips">
+										{(['FREE', 'RECOMMEND', 'NEWS', 'HUMOR'] as const).map((cat) => (
+											<button
+												key={cat}
+												className={`category-chip ${searchCommunity.search.articleCategory === cat ? 'active' : ''}`}
+												onClick={(e) => tabChangeHandler(e, cat)}
+											>
+												{cat === 'FREE' ? 'Free Board' : cat === 'RECOMMEND' ? 'Recommendation' : cat === 'HUMOR' ? 'Humor' : 'News'}
+											</button>
+										))}
+									</Stack>
+
 									<TabPanel value="FREE">
 										<Stack className="list-box">
 											{total ? (

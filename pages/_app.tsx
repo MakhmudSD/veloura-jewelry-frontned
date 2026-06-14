@@ -1,7 +1,8 @@
 import type { AppProps } from 'next/app';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { light } from '../scss/MaterialTheme';
 import { ApolloProvider } from '@apollo/client';
 import { useApollo } from '../apollo/client';
@@ -29,12 +30,30 @@ const App = ({ Component, pageProps }: AppProps) => {
 	// @ts-ignore
 	const [theme, setTheme] = useState(createTheme(light));
 	const client = useApollo(pageProps.initialApolloState);
+	const router = useRouter();
+	const [transitioning, setTransitioning] = useState(false);
+
+	useEffect(() => {
+		const handleStart = () => setTransitioning(true);
+		const handleDone = () => setTransitioning(false);
+		router.events.on('routeChangeStart', handleStart);
+		router.events.on('routeChangeComplete', handleDone);
+		router.events.on('routeChangeError', handleDone);
+		return () => {
+			router.events.off('routeChangeStart', handleStart);
+			router.events.off('routeChangeComplete', handleDone);
+			router.events.off('routeChangeError', handleDone);
+		};
+	}, [router]);
 
 	return (
 		<ApolloProvider client={client}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
-				<div className={`${judson.variable} ${inter.variable}`} style={{ minHeight: '100%' }}>
+				<div
+					className={`${judson.variable} ${inter.variable} page-transition${transitioning ? ' page-exit' : ' page-enter'}`}
+					style={{ minHeight: '100%' }}
+				>
 					<Component {...pageProps} />
 				</div>
 			</ThemeProvider>

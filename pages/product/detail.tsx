@@ -65,6 +65,9 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 	const [stars, setStars] = useState(0);
 	const [selectedRingSize, setSelectedRingSize] = useState<number>(ringSize[0]);
 	const [quantity, setQuantity] = useState(1);
+	const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+	const toggleAccordion = (key: string) => setOpenAccordion((prev) => (prev === key ? null : key));
 
 	const [insertCommentData, setInsertCommentData] = useState<CommentInput>({
 		commentGroup: CommentGroup.PRODUCT,
@@ -488,15 +491,34 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 								</IconButton>
 							</Box>
 
-							<Box className="detail-shipping-info">
-								<Box className="detail-delivery-info">
-									<img src="/img//icons/delivery.png" alt="" />
-									<span>Estimate delivery times: 12-26 days (International)</span>
-								</Box>
-								<Box className="detail-return-info">
-									<img src="/img/icons/return.svg" alt="" />
-									<span>Free return within 30 days of purchase.</span>
-								</Box>
+							<Box className="detail-accordion-group">
+								{[
+									{
+										key: 'details',
+										label: 'Details',
+										content: `Material: ${product?.productMaterial || 'N/A'} · Origin: ${product?.productOrigin || 'N/A'} · Weight: ${product?.productWeightUnit || 'N/A'} · Gender: ${product?.productGender || 'N/A'}`,
+									},
+									{
+										key: 'shipping',
+										label: 'Shipping',
+										content: 'Estimated delivery: 12–26 days internationally. Express options available at checkout. Free shipping on orders over KRW 150,000.',
+									},
+									{
+										key: 'returns',
+										label: 'Returns',
+										content: 'Free returns within 30 days of purchase. Items must be unworn and in original packaging. Personalized pieces are non-returnable.',
+									},
+								].map(({ key, label, content }) => (
+									<Box key={key} className="detail-accordion">
+										<Box className="accordion-header" onClick={() => toggleAccordion(key)}>
+											<span>{label}</span>
+											<span className={`chevron ${openAccordion === key ? 'open' : ''}`}>&#8964;</span>
+										</Box>
+										<Box className={`accordion-body ${openAccordion === key ? 'open' : ''}`}>
+											{content}
+										</Box>
+									</Box>
+								))}
 							</Box>
 							<Box className="detail-meta-info">
 								<Typography className="detail-seller">
@@ -658,6 +680,30 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 						</Stack>
 					)}
 				</div>
+
+				{/* Sticky mobile add-to-cart bar */}
+				{product && (
+					<Box className="mobile-sticky-cart">
+						<Box className="sticky-price">KRW{formatterStr(product.productPrice)}</Box>
+						<Button
+							variant="contained"
+							className="sticky-add-btn"
+							onClick={() =>
+								handleAdd(
+									product._id,
+									product.productTitle,
+									slideImage,
+									product.productPrice,
+									isRingCategory ? selectedRingSize ?? null : null,
+									isRingCategory ? selectedWeight ?? null : null,
+									quantity,
+								)
+							}
+						>
+							Add to Cart
+						</Button>
+					</Box>
+				)}
 			</div>
 		);
 	}

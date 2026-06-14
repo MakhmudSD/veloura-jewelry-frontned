@@ -29,6 +29,17 @@ const StoreCard = (props: StoreCardProps) => {
 	const { t } = useTranslation('common');
 	const [liked, setLiked] = useState(store?.meLiked?.[0]?.myFavorite || false);
 	const [glow, setGlow] = useState(false);
+	const [tilt, setTilt] = useState({ x: 0, y: 0 });
+	const cardRef = React.useRef<HTMLDivElement>(null);
+
+	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (!cardRef.current) return;
+		const rect = cardRef.current.getBoundingClientRect();
+		const x = ((e.clientX - rect.left) / rect.width - 0.5) * 16;
+		const y = -((e.clientY - rect.top) / rect.height - 0.5) * 16;
+		setTilt({ x, y });
+	};
+	const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
 	const imagePath: string = store?.memberImage
 		? `${process.env.REACT_APP_API_URL}/${store?.memberImage}`
@@ -47,9 +58,23 @@ const StoreCard = (props: StoreCardProps) => {
 		return <div>STORE CARD</div>;
 	} else {
 		return (
-			<Stack className="top-store-card">
+			<Stack
+				className="top-store-card"
+				ref={cardRef}
+				onMouseMove={handleMouseMove}
+				onMouseLeave={handleMouseLeave}
+				style={{
+					transform: `perspective(800px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg) scale(${tilt.x !== 0 || tilt.y !== 0 ? 1.02 : 1})`,
+					transition: tilt.x === 0 && tilt.y === 0 ? 'transform 0.5s ease' : 'transform 0.1s ease',
+				}}
+			>
 				<Stack className="store-image-container">
 					<img src={imagePath} alt={store.memberNick} />
+					{store.memberAddress && (
+						<Box className="location-badge">
+							<span>📍 {store.memberAddress.split(' ').slice(0, 2).join(' ')}</span>
+						</Box>
+					)}
 				</Stack>
 
 				<Stack className="top-store-card-down">
