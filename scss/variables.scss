@@ -1,9 +1,22 @@
 /** VARIABLES **/
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Judson:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
 
 $font: 'Playfair Display', serif;
+$font-judson: 'Judson', serif;
+$font-inter: 'Inter', sans-serif;
+
 $dark-green: #013220;
 $white: #ffffff;
 $gold: #d4af37;
-$black: white;
+$black: #212121;
+$cream: #f8f2ed;
+$warm-beige: #edddce;
+$charcoal: #1a1a1a;
+
+/* Animation timings */
+$ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+$duration-slow: 0.8s;
+$duration-med: 0.5s;
+$duration-fast: 0.25s;

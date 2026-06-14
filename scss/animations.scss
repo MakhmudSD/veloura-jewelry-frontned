@@ -1,0 +1,248 @@
+/** VELOURA — LUXURY ANIMATIONS & DESIGN POLISH **/
+
+/* =============================================
+   GLOBAL: Smooth scroll + reduced-motion guard
+   ============================================= */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =============================================
+   KEYFRAMES
+   ============================================= */
+@keyframes veloura-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes veloura-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes veloura-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes veloura-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes veloura-gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+  50%       { box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.18); }
+}
+
+@keyframes veloura-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* =============================================
+   UTILITY ANIMATION CLASSES
+   Apply in JSX/TSX to trigger entrance effects.
+   e.g. className="v-fade-up v-delay-1"
+   ============================================= */
+.v-fade-up {
+  opacity: 0;
+  animation: veloura-fade-up 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.v-fade-in {
+  opacity: 0;
+  animation: veloura-fade-in 0.6s ease forwards;
+}
+
+.v-scale-in {
+  opacity: 0;
+  animation: veloura-scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger delays (add alongside v-fade-up / v-scale-in) */
+.v-delay-1  { animation-delay: 0.1s; }
+.v-delay-2  { animation-delay: 0.2s; }
+.v-delay-3  { animation-delay: 0.35s; }
+.v-delay-4  { animation-delay: 0.5s; }
+.v-delay-5  { animation-delay: 0.65s; }
+
+/* =============================================
+   SECTION ENTRANCE — uses @starting-style for
+   modern browsers; falls back gracefully.
+   ============================================= */
+.home-page > * {
+  /* Each direct child section fades up on mount */
+  animation: veloura-fade-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+
+  &:nth-child(1) { animation-delay: 0s; }
+  &:nth-child(2) { animation-delay: 0.08s; }
+  &:nth-child(3) { animation-delay: 0.16s; }
+  &:nth-child(4) { animation-delay: 0.24s; }
+  &:nth-child(5) { animation-delay: 0.32s; }
+  &:nth-child(6) { animation-delay: 0.40s; }
+  &:nth-child(7) { animation-delay: 0.48s; }
+  &:nth-child(8) { animation-delay: 0.56s; }
+  &:nth-child(9) { animation-delay: 0.64s; }
+}
+
+/* =============================================
+   LUXURY INTERACTIVE POLISH
+   ============================================= */
+
+/* Gold shimmer text effect (apply to headings) */
+.v-gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    #c9a227 0%,
+    #f0d060 30%,
+    #d4af37 50%,
+    #f0d060 70%,
+    #c9a227 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: veloura-shimmer 3.5s linear infinite;
+}
+
+/* Hoverable image — subtle zoom + shadow lift */
+.v-img-hover {
+  overflow: hidden;
+  border-radius: inherit;
+
+  img {
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                filter 0.55s ease;
+    will-change: transform;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover img {
+    transform: scale(1.06);
+    filter: brightness(1.04);
+  }
+}
+
+/* CTA buttons — luxury press + glow */
+.v-btn-luxury {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  cursor: pointer;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.18) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+
+    &::after { opacity: 1; }
+  }
+
+  &:active {
+    transform: translateY(0px) scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+  }
+}
+
+/* Card hover lift (luxury) */
+.v-card-lift {
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Gold divider ornament */
+.v-divider-gold {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px auto;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d4af37 50%, transparent);
+    opacity: 0.6;
+  }
+
+  span {
+    color: #d4af37;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+}
+
+/* Section heading polish */
+.v-section-title {
+  font-family: 'Judson', serif;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1.25;
+  color: $black;
+
+  + .v-section-subtitle {
+    margin-top: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(34, 30, 26, 0.65);
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+  }
+}
+
+/* Float accent for decorative images */
+.v-float {
+  animation: veloura-float 4s ease-in-out infinite;
+}
+
+/* Gold pulse for highlight elements */
+.v-gold-pulse {
+  animation: veloura-gold-pulse 2.5s ease-in-out infinite;
+}
