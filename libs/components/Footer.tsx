@@ -197,9 +197,9 @@ const Footer = () => {
 					</Stack>
 				</Stack>
 
-				{/* Contact strip — direct child of footer-container, matches CSS scope */}
-				<div className="row1">
-					<div className="content">
+				{/* Contact strip */}
+				<div style={{ display:'flex', flexDirection:'row', justifyContent:'space-around', alignItems:'center', flexWrap:'wrap', gap:'24px', padding:'40px 80px', borderBottom:'1px solid rgba(212,175,55,0.2)', width:'100%', boxSizing:'border-box' }}>
+					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
 						<div className="icon">
 							<img src="/img/footer/inquiry.png" alt="Inquiry Icon" />
 						</div>
@@ -208,7 +208,7 @@ const Footer = () => {
 							<p>{t('Feel free to reach out to us via Chat in our website')}</p>
 						</div>
 					</div>
-					<div className="content">
+					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
 						<div className="icon">
 							<img src="/img/footer/location.png" alt="Location Icon" />
 						</div>
@@ -217,7 +217,7 @@ const Footer = () => {
 							<p>{t('1234 Veloura St, Suite 100, Seoul City, South Korea')}</p>
 						</div>
 					</div>
-					<div className="content">
+					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
 						<div className="icon">
 							<img src="/img/footer/call.png" alt="Call Icon" />
 						</div>
@@ -226,7 +226,7 @@ const Footer = () => {
 							<p>+82 10-9380-7522</p>
 						</div>
 					</div>
-					<div className="content">
+					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
 						<div className="icon">
 							<img src="/img/footer/inbox.png" alt="Inbox Icon" />
 						</div>

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Head from 'next/head';
 import Top from '../Top';
 import Footer from '../Footer';
-import Chat from '../Chat';
+
 import { Stack, Button, Link } from '@mui/material';
 import { userVar } from '../../../apollo/store';
 import { useReactiveVar } from '@apollo/client';
@@ -109,7 +109,6 @@ const withLayoutMain = (Component: any) => {
             <Stack id="main">
               <Component {...props} />
             </Stack>
-            <Chat />
             <Stack id="footer">
               <Footer />
             </Stack>

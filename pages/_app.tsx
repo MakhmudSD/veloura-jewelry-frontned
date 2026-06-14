@@ -9,6 +9,7 @@ import { useApollo } from '../apollo/client';
 import { appWithTranslation } from 'next-i18next';
 import { Judson, Inter } from 'next/font/google';
 import { VelouraToastContainer, VelouraConfirmDialog } from '../libs/components/common/VelouraToast';
+import Chat from '../libs/components/Chat';
 import '../scss/app.scss';
 import '../scss/pc/main.scss';
 import '../scss/mobile/main.scss';
@@ -37,7 +38,10 @@ const App = ({ Component, pageProps }: AppProps) => {
 
 	useEffect(() => {
 		const handleStart = () => setTransitioning(true);
-		const handleDone = () => setTransitioning(false);
+		const handleDone = () => {
+			setTransitioning(false);
+			window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+		};
 		router.events.on('routeChangeStart', handleStart);
 		router.events.on('routeChangeComplete', handleDone);
 		router.events.on('routeChangeError', handleDone);
@@ -58,6 +62,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 				>
 					<Component {...pageProps} />
 				</div>
+				<Chat />
 				<VelouraToastContainer />
 				<VelouraConfirmDialog />
 			</ThemeProvider>

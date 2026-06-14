@@ -45,6 +45,19 @@ const BrandsSection = () => {
   const parallaxY = useParallax();
   const { revealed, ref: sectionRef } = useTextReveal(2);
 
+  // Scroll-accordion: expand the coverflow track when section enters viewport
+  const [accordionOpen, setAccordionOpen] = useState(false);
+  const accordionRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = accordionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setAccordionOpen(true); obs.disconnect(); }
+    }, { threshold: 0.25 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -177,9 +190,10 @@ const BrandsSection = () => {
             </Typography>
           </Box>
 
-          {/* Mountain / Coverflow Swiper */}
+          {/* Mountain / Coverflow Swiper — scroll accordion reveal */}
           <Box
-            className="brands-coverflow-wrap"
+            ref={accordionRef}
+            className={`brands-coverflow-wrap${accordionOpen ? ' brands-accordion-open' : ''}`}
             style={{
               opacity: 0,
               transition: 'opacity 0.8s ease',
