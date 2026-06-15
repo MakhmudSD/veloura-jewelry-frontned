@@ -185,10 +185,10 @@ const TrendProducts = (props: TrendProductsProps) => {
           ) : (
             <Swiper
               className="trend-product-swiper"
+              key={trendProducts.length}
               slidesPerView={3}
               spaceBetween={10}
               centeredSlides={true}
-              initialSlide={4}
               loop={true}
               autoplay={{ delay: 3200, disableOnInteraction: false, pauseOnMouseEnter: true }}
               pagination={{ clickable: true }}

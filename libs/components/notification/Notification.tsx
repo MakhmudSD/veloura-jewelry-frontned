@@ -5,7 +5,6 @@ import {
 	Box,
 	Button,
 	CircularProgress,
-	Divider,
 	IconButton,
 	List,
 	ListItem,
@@ -19,8 +18,6 @@ import {
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
-import FiberManualRecordRoundedIcon from '@mui/icons-material/FiberManualRecordRounded';
 import moment from 'moment';
 import { useApolloClient, useMutation, useQuery, useReactiveVar } from '@apollo/client';
 
@@ -61,13 +58,13 @@ const actionText = (n: any) => {
 			if (n.notificationGroup === NotificationGroup.ARTICLE) return 'commented on your article';
 			return 'commented on your post';
 		case NotificationType.NEW_PRODUCT:
-			return 'added a new product';
+			return 'listed a new product';
 		case NotificationType.ORDER:
-			return 'placed an order';
+			return 'placed a new order with you';
 		case NotificationType.MESSAGE:
 			return 'sent you a message';
 		case NotificationType.NOTICE:
-			return 'posted a site notice';
+			return 'posted a new announcement';
 		default:
 			return 'sent you a notification';
 	}
@@ -230,7 +227,21 @@ const NotificationBell: React.FC = () => {
 
 	return (
 		<>
-			<Badge color="error" badgeContent={unreadCount} max={9} overlap="circular">
+			<Badge
+				badgeContent={unreadCount}
+				max={9}
+				overlap="circular"
+				sx={{
+					'& .MuiBadge-badge': {
+						bgcolor: '#c8872a',
+						color: '#fff',
+						fontWeight: 700,
+						fontSize: 11,
+						minWidth: 18,
+						height: 18,
+					},
+				}}
+			>
 				<IconButton
 					onClick={(e: any) => setAnchorEl(e.currentTarget)}
 					sx={{ borderRadius: '14px', bgcolor: 'transparent', '&:hover': { bgcolor: 'rgba(212,180,131,.12)' } }}
@@ -246,53 +257,94 @@ const NotificationBell: React.FC = () => {
 				PaperProps={{
 					elevation: 0,
 					sx: {
-						width: 420,
-						maxWidth: '92vw',
-						maxHeight: 520,
+						width: 400,
+						maxWidth: '94vw',
+						maxHeight: 540,
 						overflow: 'hidden',
-						borderRadius: 3,
-						border: '1px solid rgba(212,180,131,0.45)',
-						boxShadow: '0 14px 36px rgba(24,26,32,0.18)',
-						background: '#fffdf8',
+						borderRadius: '14px',
+						border: '1px solid rgba(212,180,131,0.5)',
+						boxShadow: '0 20px 48px rgba(24,14,4,0.22)',
+						background: 'linear-gradient(160deg, #fffcf5 0%, #fdf6e8 100%)',
 						color: '#2e2424',
 					},
 				}}
 			>
-				<Stack direction="row" alignItems="center" justifyContent="space-between" px={2} py={1.25}>
-					<Typography sx={{ fontWeight: 800, letterSpacing: 0.3 }}>Notifications</Typography>
-					<Button
-						size="small"
-						startIcon={<DoneAllIcon />}
-						onClick={handleMarkAll}
-						disabled={!unreadCount || markingAll}
-						sx={{
-							textTransform: 'none',
-							fontWeight: 700,
-							borderRadius: 999,
-							px: 1.2,
-							py: 0.4,
-							color: '#2b241c',
-							bgcolor: unreadCount ? '#d4b483' : 'rgba(212,180,131,0.4)',
-							'&:hover': { bgcolor: '#e1c69d' },
-						}}
-					>
-						Mark all
-					</Button>
-				</Stack>
-
-				<Divider sx={{ borderColor: 'rgba(212,180,131,0.35)' }} />
+				{/* Header */}
+				<Box
+					sx={{
+						background: 'linear-gradient(90deg, #c8872a 0%, #d4af37 60%, #b07a20 100%)',
+						px: 2,
+						py: 1.1,
+					}}
+				>
+					<Stack direction="row" alignItems="center" justifyContent="space-between">
+						<Typography
+							sx={{
+								fontFamily: '"Judson", serif',
+								fontWeight: 700,
+								fontSize: 17,
+								letterSpacing: 0.8,
+								color: '#fff',
+								textTransform: 'capitalize',
+							}}
+						>
+							Notifications
+							{unreadCount > 0 && (
+								<Box
+									component="span"
+									sx={{
+										ml: 1,
+										px: 0.9,
+										py: 0.1,
+										borderRadius: 999,
+										bgcolor: 'rgba(255,255,255,0.22)',
+										fontSize: 12,
+										fontWeight: 800,
+										verticalAlign: 'middle',
+									}}
+								>
+									{unreadCount} new
+								</Box>
+							)}
+						</Typography>
+						<Button
+							size="small"
+							startIcon={<DoneAllIcon sx={{ fontSize: 15 }} />}
+							onClick={handleMarkAll}
+							disabled={!unreadCount || markingAll}
+							sx={{
+								textTransform: 'none',
+								fontWeight: 700,
+								borderRadius: 999,
+								px: 1.4,
+								py: 0.35,
+								fontSize: 12,
+								color: unreadCount ? '#fff' : 'rgba(255,255,255,0.55)',
+								bgcolor: 'rgba(255,255,255,0.18)',
+								border: '1px solid rgba(255,255,255,0.3)',
+								'&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+							}}
+						>
+							Mark all read
+						</Button>
+					</Stack>
+				</Box>
 
 				{/* Scroll container */}
-				<Box ref={listBoxRef} onScroll={onScroll} sx={{ overflowY: 'auto', maxHeight: 420, py: 0.5 }}>
+				<Box ref={listBoxRef} onScroll={onScroll} sx={{ overflowY: 'auto', maxHeight: 460, py: 0.75 }}>
 					{loading && items.length === 0 ? (
-						<Stack alignItems="center" py={3}>
-							<CircularProgress size={22} />
+						<Stack alignItems="center" py={4}>
+							<CircularProgress size={22} sx={{ color: '#d4af37' }} />
 						</Stack>
 					) : (
 						<>
 							<List dense disablePadding>
 								{visibleItems.map((n) => {
-									const actor = (n as any).memberData || { _id: n.authorId, memberNick: 'Someone', memberImage: '' };
+									const fallbackNick =
+										n.notificationType === NotificationType.ORDER ? 'New Customer'
+										: n.notificationType === NotificationType.NOTICE ? 'Veloura Team'
+										: 'A user';
+									const actor = (n as any).memberData || { _id: n.authorId, memberNick: fallbackNick, memberImage: '' };
 									const isUnread = n.notificationStatus === NotificationStatus.WAIT;
 									const action = actionText(n);
 									const secondary = secondaryText(n);
@@ -303,22 +355,25 @@ const NotificationBell: React.FC = () => {
 											sx={{
 												mx: 1,
 												my: 0.5,
-												borderRadius: 2,
-												border: isUnread ? '1px solid rgba(212,180,131,0.55)' : '1px solid rgba(24,26,32,0.06)',
-												background: isUnread ? 'rgba(212,180,131,0.10)' : '#fff',
-												transition: 'transform .15s ease, background .2s ease, border .2s ease',
+												borderRadius: '10px',
+												border: isUnread
+													? '1px solid rgba(212,175,55,0.45)'
+													: '1px solid rgba(24,26,32,0.07)',
+												background: isUnread
+													? 'linear-gradient(135deg, rgba(212,175,55,0.09) 0%, rgba(255,250,235,0.95) 100%)'
+													: 'rgba(255,255,255,0.7)',
+												transition: 'transform .15s ease, box-shadow .2s ease',
 												'&:hover': {
 													transform: 'translateY(-1px)',
-													background: '#fffdfa',
-													border: '1px solid rgba(212,180,131,0.65)',
+													boxShadow: '0 4px 14px rgba(200,135,42,0.14)',
+													border: '1px solid rgba(212,175,55,0.6)',
 												},
-												...(isUnread ? {} : { opacity: 0.78, filter: 'saturate(0.92)' }),
 											}}
 										>
 											<ListItem
 												alignItems="flex-start"
 												disableGutters
-												sx={{ px: 1.25, py: 1, cursor: 'pointer' }}
+												sx={{ px: 1.25, py: 0.9, cursor: 'pointer' }}
 												onClick={async (e: any) => {
 													e.stopPropagation();
 													if (isUnread && !markingOne) {
@@ -327,40 +382,50 @@ const NotificationBell: React.FC = () => {
 												}}
 												secondaryAction={
 													<Stack direction="row" alignItems="center" spacing={0.5}>
-														{isUnread ? (
-															<Tooltip title="Unread">
-																<FiberManualRecordRoundedIcon sx={{ fontSize: 12, color: '#d4b483', mr: 0.5 }} />
-															</Tooltip>
-														) : (
-															<Tooltip title="Read">
-																<CheckCircleOutlineRoundedIcon sx={{ fontSize: 16, color: '#8a8071', mr: 0.5 }} />
-															</Tooltip>
+														{isUnread && (
+															<Box
+																sx={{
+																	width: 8,
+																	height: 8,
+																	borderRadius: '50%',
+																	bgcolor: '#c8872a',
+																	mr: 0.5,
+																	flexShrink: 0,
+																}}
+															/>
 														)}
-														<Tooltip title="Remove notification">
+														<Tooltip title="Dismiss">
 															<IconButton
 																edge="end"
+																size="small"
 																onClick={(e: any) => {
 																	e.stopPropagation();
-																	SOFT_DELETE_ONLY ? handleSoftRemove(n._id) : handleSoftRemove(n._id);
+																	handleSoftRemove(n._id);
 																}}
 																sx={{
-																	color: '#6b5a45',
-																	'&:hover': { color: '#2e2424', bgcolor: 'rgba(212,180,131,0.15)' },
+																	color: '#a08060',
+																	'&:hover': { color: '#7a3f10', bgcolor: 'rgba(212,180,131,0.15)' },
 																}}
 															>
-																<DeleteOutlineRoundedIcon />
+																<DeleteOutlineRoundedIcon fontSize="small" />
 															</IconButton>
 														</Tooltip>
 													</Stack>
 												}
 											>
-												<ListItemAvatar sx={{ mr: 1.25 }}>
+												<ListItemAvatar sx={{ mr: 1.25, minWidth: 48 }}>
 													<Avatar
 														src={buildImgSrc(actor?.memberImage)}
 														alt={actor?.memberNick || 'user'}
-														sx={{ width: 40, height: 40, bgcolor: '#fff', border: '2px solid #d4b483' }}
+														sx={{
+															width: 42,
+															height: 42,
+															bgcolor: '#f5e8d0',
+															border: isUnread ? '2px solid #c8872a' : '2px solid rgba(212,180,131,0.5)',
+															boxShadow: isUnread ? '0 0 0 2px rgba(200,135,42,0.18)' : 'none',
+														}}
 														imgProps={{
-															style: { objectFit: 'cover', background: '#fff' },
+															style: { objectFit: 'cover' },
 															onError: (e: any) => {
 																e.currentTarget.src = '/img/profile/defaultUser3.svg';
 															},
@@ -370,38 +435,53 @@ const NotificationBell: React.FC = () => {
 
 												<ListItemText
 													primary={
-														<Stack direction="row" alignItems="baseline" gap={1} flexWrap="wrap">
-															{!isUnread && (
-																<CheckCircleOutlineRoundedIcon sx={{ fontSize: 14, mt: '2px', color: '#8a8071' }} />
-															)}
-															<Typography sx={{ fontWeight: 800, color: '#2e2424' }}>
-																{actor?.memberNick ?? 'Someone'}
+														<Stack direction="row" alignItems="baseline" gap={0.75} flexWrap="wrap" pr={3}>
+															<Typography
+																sx={{
+																	fontWeight: 800,
+																	color: '#1a1008',
+																	fontFamily: '"Judson", serif',
+																	fontSize: 14,
+																}}
+															>
+																{actor?.memberNick}
 															</Typography>
-															<Typography sx={{ fontWeight: isUnread ? 700 : 500, color: '#3a2e2e' }}>
+															<Typography
+																sx={{
+																	fontWeight: isUnread ? 600 : 400,
+																	color: isUnread ? '#3a2010' : '#6b5a45',
+																	fontSize: 13,
+																}}
+															>
 																{action}
-															</Typography>
-															<Typography sx={{ ml: 'auto', fontSize: 12, color: '#857a6b' }}>
-																{moment(n.createdAt).fromNow()}
 															</Typography>
 														</Stack>
 													}
 													secondary={
-														secondary ? (
-															<Typography
-																sx={{
-																	color: '#5d5247',
-																	display: '-webkit-box',
-																	WebkitLineClamp: 2,
-																	WebkitBoxOrient: 'vertical',
-																	overflow: 'hidden',
-																}}
-																variant="body2"
-															>
-																{secondary}
+														<Stack mt={0.3} spacing={0.3}>
+															{secondary && (
+																<Typography
+																	sx={{
+																		color: '#7a6248',
+																		fontSize: 12,
+																		fontStyle: 'italic',
+																		display: '-webkit-box',
+																		WebkitLineClamp: 2,
+																		WebkitBoxOrient: 'vertical',
+																		overflow: 'hidden',
+																	}}
+																	variant="body2"
+																>
+																	{secondary}
+																</Typography>
+															)}
+															<Typography sx={{ fontSize: 11, color: '#a89070', fontWeight: 500 }}>
+																{moment(n.createdAt).fromNow()}
 															</Typography>
-														) : null
+														</Stack>
 													}
 													primaryTypographyProps={{ component: 'div' }}
+													secondaryTypographyProps={{ component: 'div' }}
 												/>
 											</ListItem>
 										</Box>
@@ -409,8 +489,8 @@ const NotificationBell: React.FC = () => {
 								})}
 							</List>
 
-							{/* Load more area */}
-							<Stack alignItems="center" py={canLoadMore ? 1.5 : 0.5}>
+							{/* Load more / empty state */}
+							<Stack alignItems="center" py={canLoadMore ? 1.5 : 1}>
 								{canLoadMore ? (
 									<Button
 										onClick={loadMore}
@@ -419,18 +499,20 @@ const NotificationBell: React.FC = () => {
 											textTransform: 'none',
 											fontWeight: 700,
 											borderRadius: 999,
-											px: 1.6,
-											py: 0.6,
-											color: '#2b241c',
-											bgcolor: '#e9d6b3',
-											'&:hover': { bgcolor: '#e1c69d' },
+											px: 2,
+											py: 0.5,
+											fontSize: 12,
+											color: '#2b1c08',
+											bgcolor: 'rgba(212,175,55,0.18)',
+											border: '1px solid rgba(212,175,55,0.4)',
+											'&:hover': { bgcolor: 'rgba(212,175,55,0.3)' },
 										}}
 									>
 										{loadingMore ? 'Loading…' : 'Load more'}
 									</Button>
 								) : (
-									<Typography sx={{ color: '#8a8071', fontSize: 12, py: 0.5 }}>
-										{items.length ? 'No more notifications' : 'No notifications'}
+									<Typography sx={{ color: '#a89070', fontSize: 12, fontStyle: 'italic' }}>
+										{items.length ? 'You\'re all caught up' : 'No notifications yet'}
 									</Typography>
 								)}
 							</Stack>

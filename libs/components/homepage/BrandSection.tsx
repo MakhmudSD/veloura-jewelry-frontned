@@ -5,6 +5,8 @@ import EastIcon from '@mui/icons-material/East';
 import AnimatedSnackbar from '../common/Animations';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectCoverflow } from 'swiper';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
 import { t } from 'i18next';
 import dynamic from 'next/dynamic';
 
