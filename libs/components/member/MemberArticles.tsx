@@ -60,7 +60,6 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 			console.warn('notifyMember failed', e);
 		}
 	};
-	``;
 	const likeArticleHandler = async (e: T, user: any, id: string) => {
 		try {
 			e.stopPropagation();
@@ -70,6 +69,7 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 			}
 			if (!user?._id) throw new Error(Messages.error2);
 
+			const article = memberBoArticles?.find((a) => a._id === id);
 			await likeTargetBoardArticle({
 				variables: {
 					input: id,
@@ -77,18 +77,22 @@ const MemberArticles: NextPage = ({ initialInput, ...props }: any) => {
 			});
 			await boardArticlesRefetch({ input: searchFilter });
 			await sweetTopSmallSuccessAlert('Success! Article liked successfully!', 700);
-			void notifyMember({
-				notificationType: NotificationType.LIKE,
-				notificationGroup: NotificationGroup.ARTICLE,
-				notificationTitle: 'New like',
-				notificationDesc: `${user.memberNick ?? 'Someone'} liked your article.`,
-				authorId: user._id,
-			});
+			if (article?.memberId && article.memberId !== user._id) {
+				void notifyMember({
+					notificationType: NotificationType.LIKE,
+					notificationGroup: NotificationGroup.ARTICLE,
+					notificationTitle: 'New like',
+					notificationDesc: `${user.memberNick ?? 'Someone'} liked your article.`,
+					authorId: user._id,
+					receiverId: article.memberId,
+				});
+			}
 		} catch (err: any) {
 			console.error('Error liking article:', err);
 			sweetErrorHandling(err).then();
 		}
 	};
+
 
 	if (device === 'mobile') {
 		return <div>MEMBER ARTICLES MOBILE</div>;
