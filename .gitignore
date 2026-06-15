@@ -38,7 +38,7 @@ next-env.d.ts
 /.idea
 # yarn.lock
 
-# env ignores
-.env.development
-.env.local
+# env ignores — catch-all: never commit any .env variant
 .env
+.env.*
+!.env.example
