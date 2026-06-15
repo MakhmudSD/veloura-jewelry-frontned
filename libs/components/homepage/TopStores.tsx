@@ -190,8 +190,10 @@ const TopStores = (props: TopStoresProps) => {
 							<Swiper
 								className="top-stores-swiper"
 								slidesPerView={2}
-								spaceBetween={10}
+								spaceBetween={8}
 								watchOverflow
+								loop
+								autoplay={{ delay: 3800, disableOnInteraction: false, pauseOnMouseEnter: true }}
 								modules={[Autoplay, Navigation, Pagination]}
 								navigation={{ nextEl: '.swiper-stores-next', prevEl: '.swiper-stores-prev' }}
 							>

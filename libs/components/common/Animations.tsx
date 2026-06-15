@@ -1,8 +1,5 @@
 import React from 'react';
-import { Snackbar, Alert, Slide, SlideProps } from '@mui/material'
-import { useEffect, useRef } from 'react';
-import TrendProductCard from '../homepage/TrendProductCard';import { Product } from '../../types/product/product';
-;
+import { Snackbar, Alert, Slide, SlideProps } from '@mui/material';
 
 function SlideTransition(props: SlideProps) {
   return <Slide {...props} direction="down" />;
@@ -61,43 +58,3 @@ export default function AnimatedSnackbar({
   );
 }
 
-interface TrendProductCarouselProps {
-  trendProducts: Product[];
-  likeProductHandler: any;
-}
-
-const TrendProductCarousel = ({ trendProducts, likeProductHandler }: TrendProductCarouselProps) => {
-	const containerRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		const container = containerRef.current;
-		if (!container) return;
-
-		const handleScroll = () => {
-			const cards = container.querySelectorAll('.trend-card-box');
-			const containerCenter = container.scrollLeft + container.offsetWidth / 2;
-
-			cards.forEach((card: any) => {
-				const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-				const distance = Math.abs(containerCenter - cardCenter);
-
-				card.classList.remove('active');
-				if (distance < card.offsetWidth / 2) {
-					card.classList.add('active');
-				}
-			});
-		};
-
-		handleScroll(); // init
-		container.addEventListener('scroll', handleScroll);
-		return () => container.removeEventListener('scroll', handleScroll);
-	}, []);
-
-	return (
-		<div ref={containerRef} className="trend-products">
-			{trendProducts.map((product) => (
-				<TrendProductCard key={product._id} product={product} likeProductHandler={likeProductHandler} />
-			))}
-		</div>
-	);
-};

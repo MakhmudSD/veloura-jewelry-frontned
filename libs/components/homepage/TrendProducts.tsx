@@ -186,12 +186,13 @@ const TrendProducts = (props: TrendProductsProps) => {
             <Swiper
               className="trend-product-swiper"
               slidesPerView={3}
-              spaceBetween={20}
+              spaceBetween={10}
               centeredSlides={true}
               initialSlide={4}
               loop={true}
+              autoplay={{ delay: 3200, disableOnInteraction: false, pauseOnMouseEnter: true }}
               pagination={{ clickable: true }}
-              modules={[Navigation, Pagination]}
+              modules={[Navigation, Pagination, Autoplay]}
               navigation={{
                 nextEl: ".swiper-button-next",
                 prevEl: ".swiper-button-prev",
