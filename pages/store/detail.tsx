@@ -16,7 +16,7 @@ import { ProductsInquiry } from '../../libs/types/product/product.input';
 import { CommentInput, CommentsInquiry } from '../../libs/types/comment/comment.input';
 import { Comment } from '../../libs/types/comment/comment';
 import { CommentGroup } from '../../libs/enums/comment.enum';
-import { REACT_APP_API_URL } from '../../libs/config';
+import { resolveImageUrl } from '../../libs/config';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GET_COMMENTS, GET_MEMBER, GET_PRODUCTS } from '../../apollo/user/query';
 import { T } from '../../libs/types/common';
@@ -263,9 +263,7 @@ const StoreDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 					<Stack className={'store-info'}>
 						<Box className={'left'}>
 							<img
-								src={
-									store?.memberImage ? `${REACT_APP_API_URL}/${store?.memberImage}` : '/img/profile/defaultStore.jpg'
-								}
+								src={resolveImageUrl(store?.memberImage, '/img/profile/defaultStore.jpg')}
 								alt=""
 							/>
 							<Box

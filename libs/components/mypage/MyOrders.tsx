@@ -13,7 +13,7 @@ import { OrderInquiry } from '../../types/order/order.input';
 import { Order } from '../../types/order/order';
 import { OrderStatus } from '../../enums/order.enum';
 import moment from 'moment';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import {useEffect} from 'react';
 
 const money = (n?: number, currency?: string) =>
@@ -220,9 +220,7 @@ const MyOrders: NextPage = ({ initialInput }: any) => {
                     <Stack className="order-items-inline" sx={{ gap: 12, mt: 1 }}>
                       {items.map((it: any, idx: number) => {
                         const thumb = it?.productData?.productImages?.[0] || '/img/product/no-image.png';
-                        const src = thumb?.startsWith('http')
-                          ? thumb
-                          : `${REACT_APP_API_URL}/${thumb}`.replace(/\/+$/, '').replace(/([^:]\/)\/+/g, '$1');
+                        const src = resolveImageUrl(thumb, '/img/product/no-image.png');
                         const title = it?.productData?.productTitle || '—';
                         const qty = it?.itemQuantity ?? 0;
                         const price = it?.itemPrice;

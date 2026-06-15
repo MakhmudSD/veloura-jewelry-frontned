@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { FollowInquiry } from '../../types/follow/follow.input';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { Following } from '../../types/follow/follow';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { userVar } from '../../../apollo/store';
@@ -106,9 +106,7 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
             </div>
           )}
           {memberFollowings.map((following: Following) => {
-            const imagePath: string = following?.followingData?.memberImage
-              ? `${REACT_APP_API_URL}/${following?.followingData?.memberImage}`
-              : '/img/profile/defaultUser.svg';
+            const imagePath: string = resolveImageUrl(following?.followingData?.memberImage, '/img/profile/defaultUser.svg');
             const isFollowing = !!(following?.meFollowed && following?.meFollowed[0]?.myFollowing);
 
             return (

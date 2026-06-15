@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useReactiveVar } from '@apollo/client';
 import { basketItemsVar, userVar } from '../../apollo/store';
 import { getJwtToken, logOut, updateUserInfo } from '../auth';
-import { REACT_APP_API_URL } from '../config';
+import { resolveImageUrl } from '../config';
 
 import {
 	Badge,
@@ -418,11 +418,7 @@ const Top = () => {
 
 											<div className={'login-user'} onClick={(event: any) => setLogoutAnchor(event.currentTarget)}>
 												<img
-													src={
-														user?.memberImage
-															? `${REACT_APP_API_URL}/${user?.memberImage}`
-															: '/img/profile/defaultUser3.svg'
-													}
+													src={resolveImageUrl(user?.memberImage, '/img/profile/defaultUser3.svg')}
 													alt=""
 												/>
 											</div>

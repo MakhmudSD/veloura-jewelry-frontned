@@ -3,13 +3,13 @@ import { NextPage } from 'next';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Button, Stack, Typography } from '@mui/material';
 import axios from 'axios';
-import { Messages, REACT_APP_API_URL } from '../../config';
+import { Messages, resolveImageUrl } from '../../config';
 import { getJwtToken, updateStorage, updateUserInfo } from '../../auth';
 import { useMutation, useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
 import { MemberUpdate } from '../../types/member/member.update';
 import { UPDATE_MEMBER } from '../../../apollo/user/mutation';
-import { sweetErrorHandling, sweetMixinSuccessAlert } from '../../sweetAlert';
+import { sweetErrorHandling, sweetMixinErrorAlert, sweetMixinSuccessAlert } from '../../sweetAlert';
 
 const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 	const device = useDeviceDetect();
@@ -18,6 +18,7 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 
 	const [updateData, setUpdateData] = useState<MemberUpdate>(initialValues);
 	const [saving, setSaving] = useState(false);
+	const [uploading, setUploading] = useState(false);
 
 	const [updateMember] = useMutation(UPDATE_MEMBER);
 
@@ -37,8 +38,8 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 			!updateData.memberNick?.trim() ||
 			!updateData.memberPhone?.trim() ||
 			!updateData.memberAddress?.trim() ||
-			!updateData.memberImage?.trim() ||
-			saving
+			saving ||
+			uploading
 		);
 	};
 
@@ -46,6 +47,8 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 		try {
 			const image = e.target.files?.[0];
 			if (!image) return;
+
+			setUploading(true);
 
 			const formData = new FormData();
 			formData.append(
@@ -60,7 +63,6 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 			formData.append('map', JSON.stringify({ '0': ['variables.file'] }));
 			formData.append('0', image);
 
-			// NOTE: in Next.js, prefer NEXT_PUBLIC_… env names
 			const endpoint = process.env.NEXT_PUBLIC_API_GRAPHQL_URL || process.env.REACT_APP_API_GRAPHQL_URL;
 			const response = await axios.post(String(endpoint), formData, {
 				headers: {
@@ -71,23 +73,28 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 			});
 
 			const responseImage = response?.data?.data?.imageUploader;
-			if (!responseImage) return;
+			if (!responseImage) {
+				await sweetMixinErrorAlert('Image upload failed. Please try again.');
+				return;
+			}
 
 			setUpdateData((prev) => ({ ...prev, memberImage: responseImage }));
-			return `${REACT_APP_API_URL}/${responseImage}`;
 		} catch (err) {
-			console.log('Error, uploadImage:', err);
+			console.error('Error, uploadImage:', err);
+			await sweetMixinErrorAlert('Image upload failed. Please try again.');
+		} finally {
+			setUploading(false);
 		}
 	};
+
 	const updateProductHandler = useCallback(async () => {
 		try {
 			if (!user._id) throw new Error(Messages.error2);
 
-			updateData._id = user._id;
+			setSaving(true);
+			const input: MemberUpdate = { ...updateData, _id: user._id };
 			const result = await updateMember({
-				variables: {
-					input: updateData,
-				},
+				variables: { input },
 			});
 
 			//@ts-ignore
@@ -98,8 +105,10 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 		} catch (err: any) {
 			console.error('Error updating profile:', err);
 			sweetErrorHandling(err).then();
+		} finally {
+			setSaving(false);
 		}
-	}, [updateData]);
+	}, [updateData, user._id]);
 
 	if (device === 'mobile') {
 		return <>MY PROFILE PAGE MOBILE</>;
@@ -120,11 +129,7 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 					<Stack className="image-big-box">
 						<Stack className="image-box">
 							<img
-								src={
-									updateData?.memberImage
-										? `${REACT_APP_API_URL}/${updateData?.memberImage}`
-										: `/img/profile/defaultUser.svg`
-								}
+								src={resolveImageUrl(updateData?.memberImage, '/img/profile/defaultUser.svg')}
 								alt=""
 							/>
 						</Stack>
@@ -134,10 +139,11 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 								hidden
 								id="hidden-input"
 								onChange={uploadImage}
+								disabled={uploading}
 								accept="image/jpg, image/jpeg, image/png"
 							/>
 							<label htmlFor="hidden-input" className="labeler">
-								<Typography>Upload Profile Image</Typography>
+								<Typography>{uploading ? 'Uploading…' : 'Upload Profile Image'}</Typography>
 							</label>
 							<Typography className="upload-text">A photo must be in JPG, JPEG or PNG format!</Typography>
 						</Stack>

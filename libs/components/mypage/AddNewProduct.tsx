@@ -8,7 +8,7 @@ import {
   ProductLocation,
   ProductMaterial,
 } from '../../enums/product.enum';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import axios from 'axios';
 import { getJwtToken } from '../../auth';
 import { sweetErrorHandling, sweetMixinErrorAlert, sweetMixinSuccessAlert } from '../../sweetAlert';
@@ -490,7 +490,7 @@ const AddNewProduct = ({ initialValues, ...props }: any) => {
 
             <Stack className="gallery-box">
               {insertProductData?.productImages.map((image: string) => {
-                const imagePath: string = `${REACT_APP_API_URL}/${image}`;
+                const imagePath: string = resolveImageUrl(image, '/img/product/no-image.png');
                 return (
                   <Stack key={image} className="image-box">
                     <img src={imagePath} alt="" />

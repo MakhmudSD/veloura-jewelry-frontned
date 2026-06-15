@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Stack, Typography, Button, TextField } from '@mui/material';
 import Moment from 'react-moment';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import { Comment } from '../../types/comment/comment';
 
 interface ReviewProps {
@@ -24,11 +24,7 @@ const Review: React.FC<ReviewProps> = ({
     <Stack className="review-config">
       <Stack direction="row" spacing={1} className="parent-comment">
         <img
-          src={
-            comment.memberData?.memberImage
-              ? `${REACT_APP_API_URL}/${comment.memberData.memberImage}`
-              : '/img/profile/defaultUser.svg'
-          }
+          src={resolveImageUrl(comment.memberData?.memberImage, '/img/profile/defaultUser.svg')}
           alt=""
           className="img-box small"
         />

@@ -71,5 +71,5 @@ export const calculateStars = (comments: number, likes: number, views: number) =
 export const resolveImageUrl = (path: string | undefined | null, fallback = ''): string => {
   if (!path) return fallback;
   if (path.startsWith('/') || path.startsWith('http')) return path;
-  return `${REACT_APP_API_URL}/${path}`;
+  return `${REACT_APP_API_URL.replace(/\/+$/, '')}/${path}`;
 };

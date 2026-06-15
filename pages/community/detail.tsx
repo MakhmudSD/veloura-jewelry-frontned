@@ -35,7 +35,7 @@ import {
 	sweetMixinSuccessAlert,
 	sweetTopSmallSuccessAlert,
 } from '../../libs/sweetAlert';
-import { Messages } from '../../libs/config';
+import { Messages, resolveImageUrl } from '../../libs/config';
 import { CreateNotificationInput } from '../../libs/types/notification/notification';
 import { NotificationGroup, NotificationType } from '../../libs/enums/notification.enum';
 
@@ -95,7 +95,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 		onCompleted: (data: T) => {
 			setBoardArticle(data?.getBoardArticle);
 			if (data?.getBoardArticle?.memberData?.memberImage) {
-				setMemberImage(`${process.env.REACT_APP_API_URL}/${data.getBoardArticle.memberData.memberImage}`);
+				setMemberImage(resolveImageUrl(data.getBoardArticle.memberData.memberImage, '/img/community/articleImg.png'));
 			}
 		},
 	});
@@ -220,10 +220,8 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 			setUpdatedCommentId('');
 		}
 	};
-	const getCommentMemberImage = (imageUrl: string | undefined) => {
-		if (imageUrl) return `${process.env.REACT_APP_API_URL}/${imageUrl}`;
-		else return '/img/community/articleImg.png';
-	};
+	const getCommentMemberImage = (imageUrl: string | undefined) =>
+		resolveImageUrl(imageUrl, '/img/community/articleImg.png');
 
 	const goMemberPage = (id: any) => {
 		if (id === user?._id) router.push('/mypage');

@@ -25,7 +25,7 @@ import moment from 'moment';
 import { useApolloClient, useMutation, useQuery, useReactiveVar } from '@apollo/client';
 
 import { useNotificationWS } from '../../hooks/useNotificationWS';
-import { REACT_APP_API_URL } from '../../config';
+import { resolveImageUrl } from '../../config';
 import { userVar } from '../../../apollo/store';
 
 import {
@@ -44,11 +44,8 @@ import { NotificationGroup, NotificationStatus, NotificationType } from '../../e
 const PAGE_LIMIT = 5;
 const SOFT_DELETE_ONLY = true;
 
-const buildImgSrc = (img?: string | null) => {
-	if (!img) return '/img/profile/defaultUser3.svg';
-	if (/^https?:\/\//i.test(img)) return img;
-	return `${REACT_APP_API_URL}/${String(img)}`.replace(/([^:]\/)\/+/g, '$1');
-};
+const buildImgSrc = (img?: string | null) =>
+	resolveImageUrl(img, '/img/profile/defaultUser3.svg');
 
 const actionText = (n: any) => {
 	switch (n.notificationType as NotificationType) {

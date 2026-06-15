@@ -3,7 +3,7 @@ import { Box, Button, FormControl, MenuItem, Stack, Typography, Select, TextFiel
 import { BoardArticleCategory } from '../../enums/board-article.enum';
 import { Editor } from '@toast-ui/react-editor';
 import { getJwtToken } from '../../auth';
-import { REACT_APP_API_URL } from '../../config';
+import { REACT_APP_API_URL, resolveImageUrl } from '../../config';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -78,7 +78,7 @@ const TuiEditor = () => {
 
 			const relPath: string = res.data?.data?.imageUploader || '';
 			if (relPath && !articleImage) setArticleImage(relPath);
-			return `${REACT_APP_API_URL}/${relPath}`;
+			return resolveImageUrl(relPath);
 		} catch (err) {
 			console.error('uploadImage error:', err);
 			await sweetMixinErrorAlert('Image upload failed.');

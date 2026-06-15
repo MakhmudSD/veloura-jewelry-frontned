@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import { Product } from '../../libs/types/product/product';
 import moment from 'moment';
 import { formatterStr, likeTargetProductHandler } from '../../libs/utils';
-import { productWeight, REACT_APP_API_URL, resolveImageUrl, ringSize } from '../../libs/config';
+import { productWeight, resolveImageUrl, ringSize } from '../../libs/config';
 import { basketItemsVar, userVar } from '../../apollo/store';
 import { CommentInput, CommentsInquiry } from '../../libs/types/comment/comment.input';
 import { Comment } from '../../libs/types/comment/comment';
@@ -313,7 +313,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 		}
 	};
 
-	const toFullImageUrl = (img: string) => resolveImageUrl(img);
+	const toFullImageUrl = (img: string) => resolveImageUrl(img, '/img/product/bigImage.png');
 
 	const handleAdd = (
 		id: string,
@@ -402,7 +402,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 						<Stack className={'detail-img'}>
 							<Stack className={'sub-images vertical'}>
 								{product?.productImages.map((subImg: string, idx: number) => {
-									const imagePath: string = resolveImageUrl(subImg);
+									const imagePath: string = resolveImageUrl(subImg, '/img/product/bigImage.png');
 									return (
 										<Stack
 											className={`sub-img-box ${slideImage === subImg ? 'active' : ''}`}
