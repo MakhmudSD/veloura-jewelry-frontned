@@ -28,14 +28,36 @@ function useParallax() {
   return offsetY;
 }
 
-function useTextReveal(count: number) {
-  const [revealed, setRevealed] = useState(false);
+/** Single observer: section enters viewport → text reveals → cards bloom in after delay */
+function useSectionReveal() {
+  const [inView, setInView] = useState(false);
+  const [accordionOpen, setAccordionOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const timer = setTimeout(() => setRevealed(true), 120);
-    return () => clearTimeout(timer);
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.15 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
-  return { revealed, ref };
+
+  // Cards bloom in 350ms after text starts revealing
+  useEffect(() => {
+    if (!inView) return;
+    const t = setTimeout(() => setAccordionOpen(true), 350);
+    return () => clearTimeout(t);
+  }, [inView]);
+
+  return { inView, accordionOpen, ref };
 }
 
 const BrandsSection = () => {
@@ -43,20 +65,7 @@ const BrandsSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const parallaxY = useParallax();
-  const { revealed, ref: sectionRef } = useTextReveal(2);
-
-  // Scroll-accordion: expand the coverflow track when section enters viewport
-  const [accordionOpen, setAccordionOpen] = useState(false);
-  const accordionRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = accordionRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setAccordionOpen(true); obs.disconnect(); }
-    }, { threshold: 0.25 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const { inView, accordionOpen, ref: sectionRef } = useSectionReveal();
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -71,7 +80,6 @@ const BrandsSection = () => {
     };
     setSnackbarMessage(`Searching for ${brandName} products...`);
     setOpenSnackbar(true);
-
     setTimeout(() => {
       router.push({ pathname: '/product', query: { input: JSON.stringify(input) } });
     }, 800);
@@ -96,7 +104,8 @@ const BrandsSection = () => {
                 slidesPerView={3}
                 spaceBetween={12}
                 centeredSlides={false}
-                autoplay={{ delay: 3500, disableOnInteraction: false }}
+                autoplay={{ delay: 3200, disableOnInteraction: false }}
+                speed={600}
                 breakpoints={{
                   0:   { slidesPerView: 3, spaceBetween: 10 },
                   600: { slidesPerView: 3, spaceBetween: 12 },
@@ -148,57 +157,58 @@ const BrandsSection = () => {
         className="brands-section"
         style={{ position: 'relative', overflow: 'hidden' }}
       >
-        {/* Gold particle field — positioned absolute, pointer-events none */}
         <HeroParticles />
 
+        {/* Whole container slides up + fades in when section enters viewport */}
         <Stack
           className="container"
           style={{
             position: 'relative',
             zIndex: 2,
-            transform: `translateY(${parallaxY * 0.08}px)`,
-            transition: 'transform 0.1s linear',
+            opacity: inView ? 1 : 0,
+            transform: inView
+              ? `translateY(${parallaxY * 0.08}px)`
+              : `translateY(calc(${parallaxY * 0.08}px + 40px))`,
+            transition: 'opacity 0.75s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1)',
           }}
         >
           <Box className="brands-top">
-            {/* Staggered text reveal on load */}
+            {/* Eyebrow — reveals 100ms after section enters */}
             <Typography
               component="span"
-              className={`hero-eyebrow${revealed ? ' v-revealed' : ''}`}
+              className="hero-eyebrow"
               style={{
                 display: 'block',
-                opacity: 0,
-                transform: 'translateY(20px)',
+                opacity: inView ? 1 : 0,
+                transform: inView ? 'translateY(0)' : 'translateY(20px)',
                 transition: 'opacity 0.7s ease, transform 0.7s ease',
-                transitionDelay: '0ms',
-                ...(revealed ? { opacity: 1, transform: 'translateY(0)' } : {}),
+                transitionDelay: '100ms',
               }}
             >
               {t('Attractive Jewelry') as string}
             </Typography>
+
+            {/* Heading — 250ms after */}
             <Typography
               component="p"
               style={{
-                opacity: 0,
-                transform: 'translateY(24px)',
+                opacity: inView ? 1 : 0,
+                transform: inView ? 'translateY(0)' : 'translateY(24px)',
                 transition: 'opacity 0.8s ease, transform 0.8s ease',
-                transitionDelay: '200ms',
-                ...(revealed ? { opacity: 1, transform: 'translateY(0)' } : {}),
+                transitionDelay: '250ms',
               }}
             >
               {t('Gorgeous Brands') as string}
             </Typography>
           </Box>
 
-          {/* Mountain / Coverflow Swiper — scroll accordion reveal */}
+          {/* Cards bloom in 350ms after section enters — controlled by accordionOpen */}
           <Box
-            ref={accordionRef}
             className={`brands-coverflow-wrap${accordionOpen ? ' brands-accordion-open' : ''}`}
             style={{
-              opacity: 0,
-              transition: 'opacity 0.8s ease',
-              transitionDelay: '400ms',
-              ...(revealed ? { opacity: 1 } : {}),
+              opacity: inView ? 1 : 0,
+              transform: inView ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.7s ease 400ms, transform 0.7s cubic-bezier(0.22,1,0.36,1) 400ms',
             }}
           >
             <Swiper
@@ -209,13 +219,13 @@ const BrandsSection = () => {
               slidesPerView={3.4}
               spaceBetween={0}
               loop
-              speed={700}
-              autoplay={{ delay: 2800, disableOnInteraction: false }}
+              speed={900}
+              autoplay={{ delay: 2600, disableOnInteraction: false, pauseOnMouseEnter: true }}
               coverflowEffect={{
                 rotate: 0,
                 stretch: 0,
-                depth: 180,
-                modifier: 2.2,
+                depth: 220,
+                modifier: 2.6,
                 slideShadows: false,
               }}
               modules={[EffectCoverflow, Autoplay]}
