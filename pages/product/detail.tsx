@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ErrorBoundary } from '../../libs/components/ErrorBoundary';
 import { Box, Button, CircularProgress, Divider, IconButton, Rating, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutFull from '../../libs/components/layout/LayoutFull';
@@ -236,10 +237,9 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 		}
 	};
 
-	const likeProductHandler = async (user: T, id: string) => {
+	const likeProductHandler = async (_ignored: T, id: string) => {
 		try {
-			const currentUser = userVar();
-			if (!currentUser || !currentUser._id) {
+			if (!user || !user._id) {
 				let message = '';
 				if (i18n?.language === 'kr') {
 					message = '좋아요를 누르려면 로그인해야 합니다.';
@@ -248,29 +248,29 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 				} else {
 					message = 'You must be logged in to like';
 				}
-
 				await sweetMixinErrorAlert(message, 2000, () => {
 					router.push('/account/join');
 				});
-
 				return;
 			}
 
 			if (!id) return;
 			await likeTargetProduct({ variables: { input: id } });
-			await Promise.all([
+
+			const [productResult, productsResult] = await Promise.allSettled([
 				getProductRefetch({ input: id }),
 				getProductsRefetch({ input: searchFilter }),
 			]);
-			if (currentUser._id) {
-				void notifyMember({
-					notificationType: NotificationType.LIKE,
-					notificationGroup: NotificationGroup.PRODUCT,
-					notificationTitle: 'New like',
-					notificationDesc: `${currentUser.memberNick ?? 'Someone'} liked your product.`,
-					authorId: currentUser._id,
-				});
-			}
+			if (productResult.status === 'rejected') console.error('product refetch failed', productResult.reason);
+			if (productsResult.status === 'rejected') console.error('products refetch failed', productsResult.reason);
+
+			void notifyMember({
+				notificationType: NotificationType.LIKE,
+				notificationGroup: NotificationGroup.PRODUCT,
+				notificationTitle: 'New like',
+				notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
+				authorId: user._id,
+			});
 		} catch (err: any) {
 			console.error('ERROR on likeProductHandler', err.message);
 		}
@@ -285,33 +285,28 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 
 	const createCommentHandler = async () => {
 		try {
-			const currentUser = userVar();
-			if (!currentUser || !currentUser._id) {
+			if (!user || !user._id) {
 				await sweetMixinErrorAlert('Please log in to leave a review', 2000, () => {
 					router.push('/account/join');
 				});
 				return;
 			}
 			if (!insertCommentData.commentContent.trim()) return;
-			if (!insertCommentData.commentRefId) {
-				setInsertCommentData((prev) => ({ ...prev, commentRefId: productId || '' }));
-			}
+			const refId = insertCommentData.commentRefId || productId;
+			if (!refId) throw new Error('Cannot submit review: product ID is missing.');
 			await createComment({
 				variables: {
-					input: {
-						...insertCommentData,
-						commentRefId: insertCommentData.commentRefId || productId || '',
-					},
+					input: { ...insertCommentData, commentRefId: refId },
 				},
 			});
-			setInsertCommentData({ commentGroup: CommentGroup.PRODUCT, commentContent: '', commentRefId: productId || '' });
+			setInsertCommentData({ commentGroup: CommentGroup.PRODUCT, commentContent: '', commentRefId: refId });
 			await getCommentsRefetch({ input: commentInquiry });
 			void notifyMember({
 				notificationType: NotificationType.COMMENT,
 				notificationGroup: NotificationGroup.COMMENT,
 				notificationTitle: 'New comment',
-				notificationDesc: `${currentUser.memberNick ?? 'Someone'} commented on your product.`,
-				authorId: currentUser._id,
+				notificationDesc: `${user.memberNick ?? 'Someone'} commented on your product.`,
+				authorId: user._id,
 			});
 		} catch (err: any) {
 			await sweetErrorHandling(err);
@@ -400,6 +395,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 		return <div>PRODUCT DETAIL PAGE</div>;
 	} else {
 		return (
+			<ErrorBoundary>
 			<div id={'product-detail-page'}>
 				<div className={'container'}>
 					<Stack className="detail-top">
@@ -638,32 +634,50 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 							</Stack>
 
 							{/* Right side: Leave review form */}
-							<Stack className={'leave-review-config'}>
+							<Stack className={'leave-review-config'} role="form" aria-label="Leave a review">
 								<Typography className={'main-title'}>Leave A Review</Typography>
-								<Typography className={'review-title'}>Review</Typography>
-								<textarea
-									onChange={({ target: { value } }: any) => {
-										setInsertCommentData({ ...insertCommentData, commentContent: value });
-									}}
-									value={insertCommentData.commentContent}
-								></textarea>
-								<Box className={'submit-btn'} component={'div'}>
-									<Button
-										className={'submit-review'}
-										disabled={insertCommentData.commentContent.trim() === ''}
-										onClick={createCommentHandler}
-									>
-										<Typography className={'title'}>Submit Review</Typography>
-										<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
-											<g clipPath="url(#clip0_6975_3642)">
-												<path
-													d="M16.1571 0.5H6.37936C6.1337 0.5 5.93491 0.698792 5.93491 0.944458C5.93491 1.19012 6.1337 1.38892 6.37936 1.38892H15.0842L0.731781 15.7413C0.558156 15.915 0.558156 16.1962 0.731781 16.3698C0.818573 16.4566 0.932323 16.5 1.04603 16.5C1.15974 16.5 1.27345 16.4566 1.36028 16.3698L15.7127 2.01737V10.7222C15.7127 10.9679 15.9115 11.1667 16.1572 11.1667C16.4028 11.1667 16.6016 10.9679 16.6016 10.7222V0.944458C16.6016 0.698792 16.4028 0.5 16.1571 0.5Z"
-													fill="#181A20"
-												/>
-											</g>
-										</svg>
-									</Button>
-								</Box>
+								{!user?._id ? (
+									<Box className={'submit-btn'} component={'div'} style={{ padding: '24px 0' }}>
+										<Typography style={{ fontSize: 14, color: '#888', marginBottom: 12 }}>
+											You need to be logged in to leave a review.
+										</Typography>
+										<Button
+											className={'submit-review'}
+											onClick={() => router.push('/account/join')}
+										>
+											<Typography className={'title'}>Log In to Review</Typography>
+										</Button>
+									</Box>
+								) : (
+									<>
+										<Typography className={'review-title'}>Review</Typography>
+										<textarea
+											aria-label="Write your review"
+											onChange={({ target: { value } }: any) => {
+												setInsertCommentData({ ...insertCommentData, commentContent: value });
+											}}
+											value={insertCommentData.commentContent}
+										/>
+										<Box className={'submit-btn'} component={'div'}>
+											<Button
+												className={'submit-review'}
+												disabled={insertCommentData.commentContent.trim() === ''}
+												onClick={createCommentHandler}
+												aria-label="Submit your review"
+											>
+												<Typography className={'title'}>Submit Review</Typography>
+												<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+													<g clipPath="url(#clip0_6975_3642)">
+														<path
+															d="M16.1571 0.5H6.37936C6.1337 0.5 5.93491 0.698792 5.93491 0.944458C5.93491 1.19012 6.1337 1.38892 6.37936 1.38892H15.0842L0.731781 15.7413C0.558156 15.915 0.558156 16.1962 0.731781 16.3698C0.818573 16.4566 0.932323 16.5 1.04603 16.5C1.15974 16.5 1.27345 16.4566 1.36028 16.3698L15.7127 2.01737V10.7222C15.7127 10.9679 15.9115 11.1667 16.1572 11.1667C16.4028 11.1667 16.6016 10.9679 16.6016 10.7222V0.944458C16.6016 0.698792 16.4028 0.5 16.1571 0.5Z"
+															fill="#181A20"
+														/>
+													</g>
+												</svg>
+											</Button>
+										</Box>
+									</>
+								)}
 							</Stack>
 						</Stack>
 
@@ -743,6 +757,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 					</Box>
 				)}
 			</div>
+			</ErrorBoundary>
 		);
 	}
 };

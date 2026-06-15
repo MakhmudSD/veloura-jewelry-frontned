@@ -143,6 +143,8 @@ const ProductBigCard = ({
 										handleLikeClick(e, product._id);
 									}}
 									title={!user?._id ? 'Login required to like' : 'Like this product'}
+									aria-label={liked || myFavorites || product?.meLiked?.[0]?.myFavorite ? 'Unlike this product' : 'Like this product'}
+									aria-pressed={Boolean(liked || myFavorites || product?.meLiked?.[0]?.myFavorite)}
 								>
 									{liked || myFavorites || product?.meLiked?.[0]?.myFavorite ? (
 										<FavoriteIcon color="primary" className={glow ? 'glow' : ''} />

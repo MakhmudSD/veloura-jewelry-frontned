@@ -162,7 +162,8 @@ const TrendProductCard = (props: TrendProductCardProps) => {
 										handleLikeClick(e, product._id);
 									}}
 									title={!user?._id ? t('Login required to like') : t('Like this product')}
-									aria-label="Like this product"
+									aria-label={liked || myFavorites || product?.meLiked?.[0]?.myFavorite ? t('Unlike this product') : t('Like this product')}
+									aria-pressed={Boolean(liked || myFavorites || product?.meLiked?.[0]?.myFavorite)}
 									size={isMobile ? 'small' : 'medium'}
 								>
 									{liked || myFavorites || product?.meLiked?.[0]?.myFavorite ? (

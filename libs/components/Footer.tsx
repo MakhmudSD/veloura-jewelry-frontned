@@ -1,3 +1,4 @@
+import React from 'react';
 import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TelegramIcon from '@mui/icons-material/Telegram';
@@ -8,6 +9,35 @@ import { Stack, Box, Divider } from '@mui/material';
 import moment from 'moment';
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
+
+const ICON_CIRCLE: React.CSSProperties = {
+	width: '48px', height: '48px', display: 'flex', alignItems: 'center',
+	justifyContent: 'center', background: 'rgba(212,175,55,0.12)',
+	border: '1px solid rgba(212,175,55,0.3)', borderRadius: '50%', flexShrink: 0,
+};
+const ICON_IMG: React.CSSProperties = { width: '22px', height: '22px', objectFit: 'contain' };
+const INFO_WRAP: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '4px' };
+const INFO_H1: React.CSSProperties = {
+	fontFamily: "'Judson', serif", fontSize: '16px', fontWeight: 600,
+	color: '#d4af37', lineHeight: 1.2, margin: 0,
+};
+const INFO_P: React.CSSProperties = {
+	fontFamily: "'Inter', sans-serif", fontSize: '13px',
+	color: 'rgba(255,255,255,0.65)', lineHeight: 1.5, maxWidth: '220px', margin: 0,
+};
+
+interface ContactItemProps { icon: string; alt: string; heading: string; detail: string; }
+const ContactItem = ({ icon, alt, heading, detail }: ContactItemProps) => (
+	<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
+		<div style={ICON_CIRCLE} aria-hidden="true">
+			<img src={icon} alt={alt} style={ICON_IMG} />
+		</div>
+		<div style={INFO_WRAP}>
+			<h2 style={INFO_H1}>{heading}</h2>
+			<p style={INFO_P}>{detail}</p>
+		</div>
+	</div>
+);
 
 const Footer = () => {
 	const device = useDeviceDetect();
@@ -198,43 +228,15 @@ const Footer = () => {
 				</Stack>
 
 				{/* Contact strip */}
-				<div style={{ display:'flex', flexDirection:'row', justifyContent:'space-around', alignItems:'center', flexWrap:'wrap', gap:'24px', padding:'40px 80px', borderBottom:'1px solid rgba(212,175,55,0.2)', width:'100%', boxSizing:'border-box' }}>
-					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
-							<img src="/img/footer/inquiry.png" alt="Inquiry Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
-						</div>
-						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
-							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Having queries?')}</h1>
-							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>{t('Feel free to reach out to us via Chat in our website')}</p>
-						</div>
-					</div>
-					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
-							<img src="/img/footer/location.png" alt="Location Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
-						</div>
-						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
-							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Locate Us')}</h1>
-							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>{t('1234 Veloura St, Suite 100, Seoul City, South Korea')}</p>
-						</div>
-					</div>
-					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
-							<img src="/img/footer/call.png" alt="Call Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
-						</div>
-						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
-							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Call Us')}</h1>
-							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>+82 10-9380-7522</p>
-						</div>
-					</div>
-					<div style={{ display:'flex', flexDirection:'row', alignItems:'center', gap:'16px' }}>
-						<div style={{ width:'48px', height:'48px', display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(212,175,55,0.12)', border:'1px solid rgba(212,175,55,0.3)', borderRadius:'50%', flexShrink:0 }}>
-							<img src="/img/footer/inbox.png" alt="Inbox Icon" style={{ width:'22px', height:'22px', objectFit:'contain' }} />
-						</div>
-						<div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
-							<h1 style={{ fontFamily:"'Judson', serif", fontSize:'16px', fontWeight:600, color:'#d4af37', lineHeight:1.2, margin:0 }}>{t('Email Us')}</h1>
-							<p style={{ fontFamily:"'Inter', sans-serif", fontSize:'13px', color:'rgba(255,255,255,0.65)', lineHeight:1.5, maxWidth:'220px', margin:0 }}>support@veloura.com</p>
-						</div>
-					</div>
+				<div
+					style={{ display:'flex', flexDirection:'row', justifyContent:'space-around', alignItems:'center', flexWrap:'wrap', gap:'24px', padding:'40px 80px', borderBottom:'1px solid rgba(212,175,55,0.2)', width:'100%', boxSizing:'border-box' }}
+					role="list"
+					aria-label="Contact information"
+				>
+					<ContactItem icon="/img/footer/inquiry.png" alt="" heading={t('Having queries?')} detail={t('Feel free to reach out to us via Chat in our website')} />
+					<ContactItem icon="/img/footer/location.png" alt="" heading={t('Locate Us')} detail={t('1234 Veloura St, Suite 100, Seoul City, South Korea')} />
+					<ContactItem icon="/img/footer/call.png" alt="" heading={t('Call Us')} detail="+82 10-9380-7522" />
+					<ContactItem icon="/img/footer/inbox.png" alt="" heading={t('Email Us')} detail="support@veloura.com" />
 				</div>
 
 				<Stack className={'second'}>

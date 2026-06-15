@@ -153,7 +153,7 @@ export default function Chat() {
       )}
 
       {/* Chat panel */}
-      <div className={`vl-chat__panel ${open ? 'vl-chat__panel--open' : ''}`} role="dialog" aria-label="Veloura AI Chat">
+      <div className={`vl-chat__panel ${open ? 'vl-chat__panel--open' : ''}`} role="dialog" aria-modal="true" aria-label="Veloura AI Chat" aria-hidden={!open}>
         {/* Header */}
         <div className="vl-chat__header">
           <div className="vl-chat__header-icon">
@@ -172,7 +172,7 @@ export default function Chat() {
 
         {/* Messages */}
         <div className="vl-chat__body" ref={chatBodyRef}>
-          <div className="vl-chat__messages">
+          <div className="vl-chat__messages" aria-live="polite" aria-label="Chat messages">
             {messagesList.map((msg, i) => {
               const isUser = msg.memberData?._id === user?._id;
               const isAI   = msg.memberData?._id === AI_MEMBER._id;

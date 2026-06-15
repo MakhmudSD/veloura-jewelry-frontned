@@ -3,7 +3,7 @@ import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation, Pagination } from 'swiper';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { GET_PRODUCTS } from '../../../apollo/user/query';
 import { LIKE_TARGET_PRODUCT } from '../../../apollo/user/mutation';
 import { T } from '../../types/common';
@@ -31,6 +31,7 @@ const TrendProducts = (props: TrendProductsProps) => {
   const router = useRouter();
   const device = useDeviceDetect();
   const { t } = useTranslation('common');
+  const user = useReactiveVar(userVar);
   const prevRef = useRef<HTMLDivElement>(null);
   const nextRef = useRef<HTMLDivElement>(null);
   const [lang, setLang] = useState<string | null>('en');
@@ -72,12 +73,11 @@ const TrendProducts = (props: TrendProductsProps) => {
 
   
   /** HANDLERS **/
-  const likeProductHandler = async (user: T, id: string) => {
+  const likeProductHandler = async (_ignored: T, id: string) => {
     try {
-      const u = userVar();
-      if (!u || !u._id) {
-        await sweetMixinErrorAlert(t('You need to login to like a store. Please Login, or Register to continue'));
-        router.push('/login');
+      if (!user || !user._id) {
+        await sweetMixinErrorAlert(t('You need to login to like a product. Please login or register to continue'));
+        router.push('/account/join');
         return;
       }
       if (!id) return;
@@ -88,12 +88,6 @@ const TrendProducts = (props: TrendProductsProps) => {
       sweetMixinErrorAlert(err.message).then();
     }
   };
-  if (i18n) {
-    console.log('i18n language:', i18n.language);
-  } else {
-    console.log('i18n is null');
-  }
-
   /* ================= MOBILE ================= */
   if (device === 'mobile') {
     const isLoading = getProductsLoading && trendProducts.length === 0;
