@@ -3,7 +3,7 @@ import { Box, Button, FormControl, MenuItem, Stack, Typography, Select, TextFiel
 import { BoardArticleCategory } from '../../enums/board-article.enum';
 import { Editor } from '@toast-ui/react-editor';
 import { getJwtToken } from '../../auth';
-import { REACT_APP_API_URL, resolveImageUrl } from '../../config';
+import { REACT_APP_API_URL, REACT_APP_API_GRAPHQL_URL, resolveImageUrl } from '../../config';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -67,8 +67,7 @@ const TuiEditor = () => {
 			formData.append('map', JSON.stringify({ '0': ['variables.file'] }));
 			formData.append('0', image);
 
-			const graphqlUrl = process.env.REACT_APP_API_GRAPHQL_URL || process.env.NEXT_PUBLIC_API_GRAPHQL_URL;
-			const res = await axios.post(String(graphqlUrl), formData, {
+			const res = await axios.post(REACT_APP_API_GRAPHQL_URL, formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data',
 					'apollo-require-preflight': 'true',

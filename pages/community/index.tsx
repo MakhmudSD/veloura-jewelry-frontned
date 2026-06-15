@@ -71,8 +71,6 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 
 	/** HANDLERS **/
 	const tabChangeHandler = async (e: T, value: string) => {
-		console.log(value);
-
 		setSearchCommunity({ ...searchCommunity, page: 1, search: { articleCategory: value as BoardArticleCategory } });
 		await router.push(
 			{
@@ -91,9 +89,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const likeArticleHandler = async (e: any, user: T, id: string) => {
@@ -102,20 +98,21 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 			if (!id) return;
 			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
 
+			const article = boardArticles?.find((a) => a._id === id);
 			await likeTargetArticle({ variables: { input: id } });
 			await getArticlesRefetch({ input: initialInput });
 			await sweetTopSmallSuccessAlert('Success', 700);
-			if (id !== user._id) {
+			if (article?.memberId && article.memberId !== user._id) {
 				void notifyMember({
 					notificationType: NotificationType.LIKE,
 					notificationGroup: NotificationGroup.ARTICLE,
 					notificationTitle: 'New like',
 					notificationDesc: `${user.memberNick ?? 'Someone'} liked your article.`,
 					authorId: user._id,
+					receiverId: article.memberId,
 				});
 			}
 		} catch (err: any) {
-			console.log('ERROR, likeArticleHandler:', err.message);
 			await sweetMixinErrorAlert(err.message).then();
 		}
 	};

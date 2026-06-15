@@ -44,33 +44,24 @@ const MyPage: NextPage = () => {
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		console.log('router.isReady:', router.isReady);
-		console.log('category:', category);
-	  
 		if (!router.isReady) return;
-	  
 		if (!category) {
-		  console.log('Category missing — replacing URL');
-		  router.replace(
-			{
-			  pathname: router.pathname,
-			  query: { ...router.query, category: 'myProfile' },
-			},
-			undefined,
-			{ shallow: true }
-		  );
-		} else {
-		  console.log('Category present, no action');
+			router.replace(
+				{
+					pathname: router.pathname,
+					query: { ...router.query, category: 'myProfile' },
+				},
+				undefined,
+				{ shallow: true },
+			);
 		}
-	  }, [category, router]);
+	}, [category, router]);
 	/** HANDLERS **/
 
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 
@@ -88,63 +79,49 @@ const MyPage: NextPage = () => {
 		await sweetTopSmallSuccessAlert('Subscribed successfully', 800);
 
 		if (id !== user._id) {
-		  void notifyMember({
-			notificationType: NotificationType.FOLLOW,
-			notificationGroup: NotificationGroup.MEMBER,
-			notificationTitle: 'New follower',
-			notificationDesc: `${user.memberNick ?? 'Someone'} started following you.`,
-			authorId: user._id,
-		  });
+			void notifyMember({
+				notificationType: NotificationType.FOLLOW,
+				notificationGroup: NotificationGroup.MEMBER,
+				notificationTitle: 'New follower',
+				notificationDesc: `${user.memberNick ?? 'Someone'} started following you.`,
+				authorId: user._id,
+				receiverId: id,
+			});
 		}
-	
-		// Refetch the followers list with the same input
+
 		await refetch({ input: { ...query } });
-	  } catch (err: any) {
-		console.error('Error subscribing to member:', err);
+	} catch (err: any) {
 		sweetErrorHandling(err).then();
-	  }
+	}
 	};
-	
+
 	const unsubscribeHandler = async (id: string, refetch: any, query: any) => {
 		try {
-			console.log('Unsubscribing from member with ID:', id);
 			if (!id) throw new Error(Messages.error1);
 			if (!user._id) throw new Error(Messages.error2);
 			await unsubscribe({ variables: { input: id } });
 			await sweetTopSmallSuccessAlert('Unsubscribed successfully', 800);
 			await refetch({ input: query });
 		} catch (err: any) {
-			console.error('Error unsubscribing from member:', err);
 			sweetErrorHandling(err).then();
 		}
 	};
-	useEffect(() => {
-		console.log('🧠 user._id:', user?._id);
-	}, [user]);
 
 	const redirectToMemberPageHandler = async (memberId?: string) => {
 		try {
-			if (!memberId || memberId === 'undefined') {
-				console.warn('❌ Invalid memberId for redirect:', memberId);
-				return;
-			}
-
-			console.log('✅ Redirecting to member page with ID:', memberId);
-
+			if (!memberId || memberId === 'undefined') return;
 			if (memberId === user?._id) {
 				await router.push(`/mypage?memberId=${memberId}`);
 			} else {
 				await router.push(`/member?memberId=${memberId}`);
 			}
 		} catch (error) {
-			console.error('Error redirecting to member page:', error);
 			await sweetErrorHandling(error);
 		}
 	};
 
 	const likeMemberHandler = async (id: string, refetch: any, query: any) => {
 		try {
-			console.log('Liking member with ID:', id);
 			if (!id) return;
 			if (!user._id) throw new Error(Messages.error2);
 			await likeTargetMember({ variables: { input: id } });
@@ -152,15 +129,15 @@ const MyPage: NextPage = () => {
 			await refetch({ input: query });
 			if (id !== user._id) {
 				void notifyMember({
-				  notificationType: NotificationType.FOLLOW,
-				  notificationGroup: NotificationGroup.MEMBER,
-				  notificationTitle: 'New follower',
-				  notificationDesc: `${user.memberNick ?? 'Someone'} started following you.`,
-				  authorId: user._id,
+					notificationType: NotificationType.FOLLOW,
+					notificationGroup: NotificationGroup.MEMBER,
+					notificationTitle: 'New like',
+					notificationDesc: `${user.memberNick ?? 'Someone'} liked your profile.`,
+					authorId: user._id,
+					receiverId: id,
 				});
-			  }
+			}
 		} catch (err: any) {
-			console.error('Error liking target member:', err);
 			sweetErrorHandling(err).then();
 		}
 	};

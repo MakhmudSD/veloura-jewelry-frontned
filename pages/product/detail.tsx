@@ -232,9 +232,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const likeProductHandler = async (_ignored: T, id: string) => {
@@ -261,8 +259,6 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 				getProductRefetch({ input: id }),
 				getProductsRefetch({ input: searchFilter }),
 			]);
-			if (productResult.status === 'rejected') console.error('product refetch failed', productResult.reason);
-			if (productsResult.status === 'rejected') console.error('products refetch failed', productsResult.reason);
 
 			void notifyMember({
 				notificationType: NotificationType.LIKE,
@@ -270,10 +266,9 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 				notificationTitle: 'New like',
 				notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
 				authorId: user._id,
+				receiverId: product?.memberData?._id ?? '',
 			});
-		} catch (err: any) {
-			console.error('ERROR on likeProductHandler', err.message);
-		}
+		} catch (_err: any) {}
 	};
 
 	const isRingCategory =
@@ -307,6 +302,7 @@ const ProductDetail: NextPage = ({ initialComment, initialInput, ...props }: any
 				notificationTitle: 'New comment',
 				notificationDesc: `${user.memberNick ?? 'Someone'} commented on your product.`,
 				authorId: user._id,
+				receiverId: product?.memberData?._id ?? '',
 			});
 		} catch (err: any) {
 			await sweetErrorHandling(err);

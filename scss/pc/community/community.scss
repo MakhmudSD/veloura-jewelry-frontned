@@ -153,8 +153,10 @@
 					}
 				  }
 
-				  /* ── Horizontal category chips ── */
-				  .category-chips {
+				}
+
+				/* ── Horizontal category chips (sibling to title-box) ── */
+				.category-chips {
 					display: flex;
 					flex-direction: row;
 					flex-wrap: wrap;
@@ -182,9 +184,9 @@
 							background: #bda475;
 							color: #fff;
 							border-color: #bda475;
+							font-weight: 700;
 						}
 					}
-				  }
 				}
 	  
 				.list-box {

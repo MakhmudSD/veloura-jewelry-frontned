@@ -28,6 +28,7 @@ const MemberFollowers = (props: MemberFollowsProps) => {
   const category: any = router.query?.category ?? 'products';
   const [followInquiry, setFollowInquiry] = useState<FollowInquiry>(initialInput);
   const [memberFollowers, setMemberFollowers] = useState<Follower[]>([]);
+  const [optimisticFollows, setOptimisticFollows] = useState<Record<string, boolean>>({});
   const user = useReactiveVar(userVar);
 
   // Helper: dedupe by follower member id
@@ -107,17 +108,19 @@ const MemberFollowers = (props: MemberFollowsProps) => {
             </div>
           )}
           {memberFollowers.map((follower: Follower) => {
+            const memberId = follower?.followerData?._id;
             const imagePath: string = resolveImageUrl(follower?.followerData?.memberImage, '/img/profile/defaultUser3.svg');
-            const isFollowing = !!(follower?.meFollowed && follower?.meFollowed[0]?.myFollowing);
+            const serverFollowing = !!(follower?.meFollowed && follower?.meFollowed[0]?.myFollowing);
+            const isFollowing = optimisticFollows[memberId] !== undefined ? optimisticFollows[memberId] : serverFollowing;
 
             return (
               <Stack
                 className="follows-card-box"
-                key={follower?.followerData?._id || follower._id} // stable key by person
+                key={memberId || follower._id}
               >
                 <Stack
                   className={'info'}
-                  onClick={() => redirectToMemberPageHandler(follower?.followerData?._id)}
+                  onClick={() => redirectToMemberPageHandler(memberId)}
                 >
                   <Stack className="image-box">
                     <img src={imagePath} alt="" />
@@ -142,11 +145,7 @@ const MemberFollowers = (props: MemberFollowsProps) => {
                         onClick={(e: any) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          likeMemberHandler(
-                            follower?.followerData?._id,
-                            getMemberFollowersRefetch,
-                            followInquiry
-                          );
+                          likeMemberHandler(memberId, getMemberFollowersRefetch, followInquiry);
                         }}
                       />
                     ) : (
@@ -154,11 +153,7 @@ const MemberFollowers = (props: MemberFollowsProps) => {
                         onClick={(e: any) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          likeMemberHandler(
-                            follower?.followerData?._id,
-                            getMemberFollowersRefetch,
-                            followInquiry
-                          );
+                          likeMemberHandler(memberId, getMemberFollowersRefetch, followInquiry);
                         }}
                       />
                     )}
@@ -172,16 +167,17 @@ const MemberFollowers = (props: MemberFollowsProps) => {
                         <Typography>Following</Typography>
                         <Button
                           variant="outlined"
-                          sx={{ background: '#ed5858', ':hover': { background: '#ee7171' } }}
+                          sx={{
+                            borderColor: '#c0392b',
+                            color: '#c0392b',
+                            ':hover': { background: 'rgba(192,57,43,0.08)', borderColor: '#c0392b' },
+                          }}
                           disabled={getMemberFollowersLoading}
-						  onClick={(e: any) => {
+                          onClick={(e: any) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            unsubscribeHandler(
-                              follower?.followerData?._id,
-                              getMemberFollowersRefetch,
-                              followInquiry
-                            );
+                            setOptimisticFollows((prev) => ({ ...prev, [memberId]: false }));
+                            unsubscribeHandler(memberId, getMemberFollowersRefetch, followInquiry);
                           }}
                         >
                           Unfollow
@@ -190,16 +186,18 @@ const MemberFollowers = (props: MemberFollowsProps) => {
                     ) : (
                       <Button
                         variant="contained"
-                        sx={{ background: '#60eb60d4', ':hover': { background: '#60eb60d4' } }}
+                        sx={{
+                          background: 'linear-gradient(135deg, #c8872a, #d4af37)',
+                          color: '#fff',
+                          ':hover': { background: 'linear-gradient(135deg, #b07520, #c9a030)' },
+                          boxShadow: '0 2px 8px rgba(200,135,42,0.3)',
+                        }}
                         disabled={getMemberFollowersLoading}
                         onClick={(e: any) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          subscribeHandler(
-                            follower?.followerData?._id,
-                            getMemberFollowersRefetch,
-                            followInquiry
-                          );
+                          setOptimisticFollows((prev) => ({ ...prev, [memberId]: true }));
+                          subscribeHandler(memberId, getMemberFollowersRefetch, followInquiry);
                         }}
                       >
                         Follow

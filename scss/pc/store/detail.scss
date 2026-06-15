@@ -86,7 +86,7 @@
 								font-size: 18px;
 								font-weight: 400;
 								line-height: 28px;
-								max-height: 112px; // 4 rows × 28px
+								max-height: 112px;
 								overflow-y: auto;
 								padding-right: 6px;
 								word-wrap: break-word;
@@ -103,6 +103,28 @@
 								&::-webkit-scrollbar-track {
 									background-color: transparent;
 								}
+							}
+						}
+
+						.view-profile-btn {
+							margin-top: 16px;
+							padding: 8px 22px;
+							border: none;
+							border-radius: 20px;
+							background: linear-gradient(135deg, #c8872a, #d4af37);
+							color: #fff;
+							font-family: $font;
+							font-size: 14px;
+							font-weight: 600;
+							cursor: pointer;
+							letter-spacing: 0.4px;
+							box-shadow: 0 2px 10px rgba(200, 135, 42, 0.3);
+							transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+
+							&:hover {
+								background: linear-gradient(135deg, #b07520, #c9a030);
+								box-shadow: 0 4px 16px rgba(200, 135, 42, 0.4);
+								transform: translateY(-1px);
 							}
 						}
 					}

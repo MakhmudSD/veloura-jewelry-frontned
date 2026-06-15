@@ -27,6 +27,7 @@ export interface CreateNotificationInput {
 	notificationTitle: string;
 	notificationDesc?: string | null;
 	authorId: string;
+	receiverId: string;
 	productId?: string | null;
 	articleId?: string | null;
 	commentId?: string | null;

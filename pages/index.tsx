@@ -30,7 +30,7 @@ function RevealSection({ children, delay = 0 }: { children: React.ReactNode; del
 }
 
 const Home: NextPage<{ isMobile: boolean }> = () => {
-  const device = typeof window !== 'undefined' ? useDeviceDetect() : false;
+  const device = useDeviceDetect();
   const isMobile = device === 'mobile';
 
   return (

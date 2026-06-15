@@ -132,7 +132,6 @@ const StoreDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 	useEffect(() => {
 		if (!router.isReady) return;
 		const id = router.query.id;
-		console.log('router.query.id:', id);
 		if (id && typeof id === 'string') {
 			setMbId(id);
 		}
@@ -192,9 +191,7 @@ const StoreDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const createCommentHandler = async () => {
@@ -208,11 +205,11 @@ const StoreDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 				notificationType: NotificationType.COMMENT,
 				notificationGroup: NotificationGroup.COMMENT,
 				notificationTitle: 'New comment',
-				notificationDesc: `${user.memberNick ?? 'Someone'} commented on your product.`,
+				notificationDesc: `${user.memberNick ?? 'Someone'} commented on your store.`,
 				authorId: user._id,
+				receiverId: store?._id ?? '',
 			});
 		} catch (err: any) {
-			console.log('ERROR, createCommentHandler:', err.message);
 			await sweetMixinErrorAlert(err.message).then();
 		}
 	};
@@ -240,17 +237,17 @@ const StoreDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 			if (!id) return;
 			await likeTargetProduct({ variables: { input: id } }); // Server update
 			await getProductsRefetch({ input: searchFilter });
-			if (!user._id) {
+			if (user._id && store?._id) {
 				void notifyMember({
 					notificationType: NotificationType.LIKE,
 					notificationGroup: NotificationGroup.PRODUCT,
 					notificationTitle: 'New like',
 					notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
 					authorId: user._id,
+					receiverId: store._id,
 				});
 			}
 		} catch (err: any) {
-			console.error('ERROR on likeProductHandler', err.message);
 		}
 	};
 
@@ -266,12 +263,13 @@ const StoreDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 								src={resolveImageUrl(store?.memberImage, '/img/profile/defaultStore.jpg')}
 								alt=""
 							/>
-							<Box
-								component={'div'}
-								className={'info'}
-								onClick={() => redirectToMemberPageHandler(store?._id as string)}
-							>
-								<strong>{store?.memberFullName ?? store?.memberNick}</strong>
+							<Box component={'div'} className={'info'}>
+								<strong
+									style={{ cursor: 'pointer' }}
+									onClick={() => redirectToMemberPageHandler(store?._id as string)}
+								>
+									{store?.memberFullName ?? store?.memberNick}
+								</strong>
 								<div>
 									<img src="/img/icons/call.svg" alt="" />
 									<span>{store?.memberPhone}</span>
@@ -283,6 +281,12 @@ const StoreDetail: NextPage = ({ initialInput, initialComment, ...props }: any) 
 											'Discover timeless luxury with our handcrafted jewelry collections. Each piece is a symbol of elegance and refined artistry.'}
 									</p>
 								</div>
+								<button
+									className="view-profile-btn"
+									onClick={() => redirectToMemberPageHandler(store?._id as string)}
+								>
+									View Profile
+								</button>
 							</Box>
 						</Box>
 						<Box className="right">
