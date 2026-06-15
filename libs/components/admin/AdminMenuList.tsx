@@ -6,7 +6,7 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { ChatsCircle, Headset, User, UserCircleGear } from 'phosphor-react';
+import { ChatsCircle, Headset, Tag, User } from 'phosphor-react';
 import cookies from 'js-cookie';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 
@@ -85,7 +85,7 @@ const AdminMenuList = (props: any) => {
 		},
 		{
 			title: 'Products',
-			icon: <UserCircleGear size={20} color="#bdbdbd" weight="fill" />,
+			icon: <Tag size={20} color="#bdbdbd" weight="fill" />,
 			on_click: () => subMenuChangeHandler('Products'),
 		},
 		{

@@ -11,6 +11,7 @@ import router from 'next/router';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { sweetMixinErrorAlert } from '../../sweetAlert';
 import { i18n, useTranslation } from 'next-i18next';
+import { formatterStr } from '../../utils';
 
 interface TrendProductCardProps {
 	product: Product;
@@ -199,7 +200,7 @@ const TrendProductCard = (props: TrendProductCardProps) => {
 						</strong>
 
 						<Box className="meta">
-							<Typography className="price">From ₩ {product.productPrice}</Typography>
+							<Typography className="price">₩ {formatterStr(product.productPrice)}</Typography>
 						</Box>
 					</Box>
 				</Stack>

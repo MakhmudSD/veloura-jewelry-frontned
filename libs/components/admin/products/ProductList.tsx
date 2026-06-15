@@ -19,6 +19,7 @@ import { resolveImageUrl } from '../../../config';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Typography from '@mui/material/Typography';
 import { ProductStatus } from '../../../enums/product.enum';
+import { formatterStr } from '../../../utils';
 
 interface Data {
 	id: string;
@@ -169,7 +170,7 @@ export const ProductPanelList = (props: ProductPanelListType) => {
 												</Stack>
 											)}
 										</TableCell>
-										<TableCell align="center">{product.productPrice}</TableCell>
+										<TableCell align="center">₩ {formatterStr(product.productPrice)}</TableCell>
 										<TableCell align="center">{product.memberData?.memberNick}</TableCell>
 										<TableCell align="center">{product.productLocation}</TableCell>
 										<TableCell align="center">{product.productCategory}</TableCell>
