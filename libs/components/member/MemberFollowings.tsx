@@ -102,7 +102,7 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
             </div>
           )}
           {memberFollowings.map((following: Following) => {
-            const memberId = following?.followingData?._id;
+            const memberId = following?.followingData?._id ?? '';
             const imagePath: string = resolveImageUrl(following?.followingData?.memberImage, '/img/profile/defaultUser.svg');
             const serverFollowing = !!(following?.meFollowed && following?.meFollowed[0]?.myFollowing);
             const isFollowing = optimisticFollows[memberId] !== undefined ? optimisticFollows[memberId] : serverFollowing;
