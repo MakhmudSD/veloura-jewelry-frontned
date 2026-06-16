@@ -40,31 +40,29 @@ const MyFavorites: NextPage = () => {
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const likeProductHandler = async (e: T, user: any, id: string) => {
 		try {
 			e.stopPropagation();
 			if (!id) return;
-			if (!user.id) throw new Error(Messages.error2);
-			await likeTargetProduct({
-				variables: { input: id },
-			});
+			if (!user?._id) throw new Error(Messages.error2);
+
+			const product = myFavorites?.find((p: Product) => p._id === id);
+			await likeTargetProduct({ variables: { input: id } });
 			await getFavoritesRefetch({ input: searchFavorites });
-			if (!user._id) {
+			if (product?.memberData?._id && product.memberData._id !== user._id) {
 				void notifyMember({
 					notificationType: NotificationType.LIKE,
 					notificationGroup: NotificationGroup.PRODUCT,
 					notificationTitle: 'New like',
 					notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
 					authorId: user._id,
+					receiverId: product.memberData._id,
 				});
 			}
 		} catch (err: any) {
-			console.error('Error liking property:', err.message);
 			sweetMixinErrorAlert(err.message).then();
 		}
 	};

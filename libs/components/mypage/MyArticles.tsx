@@ -51,9 +51,7 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const likeBoardArticleHandler = async (e: T, user: any, id: string) => {
@@ -62,23 +60,21 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 			if (!id) return;
 			if (!user?._id) throw new Error(Messages.error2);
 
-			await likeTargetBoardArticle({
-				variables: {
-					input: id,
-				},
-			});
+			const article = boardArticles?.find((a: any) => a._id === id);
+			await likeTargetBoardArticle({ variables: { input: id } });
 			await boardArticlesRefetch({ input: searchCommunity });
 			await sweetTopSmallSuccessAlert('Success! Article liked successfully!', 700);
-			void notifyMember({
-				notificationType: NotificationType.LIKE,
-				notificationGroup: NotificationGroup.ARTICLE,
-				notificationTitle: 'New like',
-				notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
-				authorId: user._id,
-			});
-		} catch (error) {
-			console.error('Error liking article:', error);
-		}
+			if (article?.memberId && article.memberId !== user._id) {
+				void notifyMember({
+					notificationType: NotificationType.LIKE,
+					notificationGroup: NotificationGroup.ARTICLE,
+					notificationTitle: 'New like',
+					notificationDesc: `${user.memberNick ?? 'Someone'} liked your article.`,
+					authorId: user._id,
+					receiverId: article.memberId,
+				});
+			}
+		} catch (_error) {}
 	};
 
 	if (device === 'mobile') {

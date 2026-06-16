@@ -58,28 +58,25 @@ const MemberPage: NextPage = () => {
 			const notifyMember = async (input: CreateNotificationInput) => {
 				try {
 					await createNotification({ variables: { input } });
-				} catch (e) {
-					console.warn('notifyMember failed', e);
-				}
+				} catch (_e) {}
 			};
 	const subscribeHandler = async (id: string, refetch: any, query: any) => {
 		try {
-			console.log('_id', id);
 			if (!id) throw new Error(Messages.error1);
 			if (!user._id) throw new Error(Messages.error2);
 			await subscribe({ variables: { input: id } });
 			await sweetTopSmallSuccessAlert('Followed', 800);
-									await refetch({ input: query });
-									if (id !== user._id) {
-										void notifyMember({
-										  notificationType: NotificationType.FOLLOW,
-										  notificationGroup: NotificationGroup.MEMBER,
-										  notificationTitle: 'New follow',
-										  notificationDesc: `${user.memberNick ?? 'Someone'} followed you.`,
-										  authorId: user._id,
-										});
-									  }
-
+			await refetch({ input: query });
+			if (id !== user._id) {
+				void notifyMember({
+					notificationType: NotificationType.FOLLOW,
+					notificationGroup: NotificationGroup.MEMBER,
+					notificationTitle: 'New follower',
+					notificationDesc: `${user.memberNick ?? 'Someone'} started following you.`,
+					authorId: user._id,
+					receiverId: id,
+				});
+			}
 		} catch (err: any) {
 			sweetErrorHandling(err).then();
 		}
@@ -120,10 +117,10 @@ const MemberPage: NextPage = () => {
 					notificationTitle: 'New like',
 					notificationDesc: `${user.memberNick ?? 'Someone'} liked your profile.`,
 					authorId: user._id,
+					receiverId: id,
 				});
 			}
 		} catch (err: any) {
-			console.error('Error liking target member:', err);
 			sweetErrorHandling(err).then();
 		}
 	};

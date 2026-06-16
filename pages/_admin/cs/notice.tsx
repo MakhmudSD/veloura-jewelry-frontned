@@ -108,9 +108,7 @@ const AdminNotice: React.FC = () => {
     const notifyMember = async (input: CreateNotificationInput) => {
       try {
         await createNotification({ variables: { input } });
-      } catch (e) {
-        console.warn('notifyMember failed', e);
-      }
+      } catch (_e) {}
     };
 
   const handleSubmitNotice = async () => {
@@ -148,12 +146,13 @@ const AdminNotice: React.FC = () => {
       router.replace('/_admin/cs/notice');
       await refetch({ input: noticeInquiry });
       void notifyMember({
-                notificationType: NotificationType.NOTICE,
-                notificationGroup: NotificationGroup.NOTICE,
-                notificationTitle: 'New like',
-                notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
-                authorId: user._id,
-              });
+        notificationType: NotificationType.NOTICE,
+        notificationGroup: NotificationGroup.NOTICE,
+        notificationTitle: 'New Notice',
+        notificationDesc: 'A new announcement has been published.',
+        authorId: user._id,
+        receiverId: user._id,
+      });
     } catch (err) {
       console.error('Submit failed:', err);
       alert('Failed to submit notice.');

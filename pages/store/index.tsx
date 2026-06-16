@@ -120,9 +120,7 @@ const StoreList: NextPage = ({ initialInput, ...props }: any) => {
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const likeMemberHandler = async (store: Member, id: string) => {
@@ -154,12 +152,12 @@ const StoreList: NextPage = ({ initialInput, ...props }: any) => {
 					notificationType: NotificationType.LIKE,
 					notificationGroup: NotificationGroup.MEMBER,
 					notificationTitle: 'New like',
-					notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
+					notificationDesc: `${user.memberNick ?? 'Someone'} liked your store.`,
 					authorId: user._id,
+					receiverId: id,
 				});
 			}
 		} catch (err: any) {
-			console.error('ERROR on likeMemberHandler', err.message);
 			sweetMixinErrorAlert(err.message).then();
 		}
 	};

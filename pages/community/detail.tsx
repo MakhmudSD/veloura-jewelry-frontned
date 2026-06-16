@@ -138,9 +138,7 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const createCommentHandler = async () => {
@@ -162,13 +160,14 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 			await getCommentsRefetch({ input: searchFilter });
 			await getArticleRefetch({ input: articleId });
 			setComment('');
-			if (id !== user._id) {
+			if (boardArticle?.memberId && boardArticle.memberId !== user._id) {
 				void notifyMember({
 					notificationType: NotificationType.COMMENT,
 					notificationGroup: NotificationGroup.COMMENT,
 					notificationTitle: 'New comment',
-					notificationDesc: `${user.memberNick ?? 'Someone'} commented on your product.`,
+					notificationDesc: `${user.memberNick ?? 'Someone'} commented on your article.`,
 					authorId: user._id,
+					receiverId: boardArticle.memberId,
 				});
 			}
 		} catch (error: any) {
@@ -254,17 +253,17 @@ const CommunityDetail: NextPage = ({ initialInput, ...props }: T) => {
 			await likeTargetArticle({ variables: { input: id } });
 			await getArticleRefetch({ input: articleId });
 			await sweetTopSmallSuccessAlert('Success', 700);
-			if (id !== user._id) {
+			if (boardArticle?.memberId && boardArticle.memberId !== user._id) {
 				void notifyMember({
 					notificationType: NotificationType.LIKE,
-					notificationGroup: NotificationGroup.PRODUCT,
+					notificationGroup: NotificationGroup.ARTICLE,
 					notificationTitle: 'New like',
-					notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
+					notificationDesc: `${user.memberNick ?? 'Someone'} liked your article.`,
 					authorId: user._id,
+					receiverId: boardArticle.memberId,
 				});
 			}
 		} catch (err: any) {
-			console.log('ERROR, likeArticleHandler:', err.message);
 			await sweetMixinErrorAlert(err.message).then();
 		} finally {
 			setLikeLoading(false);

@@ -108,9 +108,7 @@ const FaqArticles: NextPage = () => {
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const handleSubmitFaq = async () => {
@@ -160,9 +158,10 @@ const FaqArticles: NextPage = () => {
 			void notifyMember({
 				notificationType: NotificationType.NOTICE,
 				notificationGroup: NotificationGroup.NOTICE,
-				notificationTitle: 'New comment',
-				notificationDesc: `${user.memberNick ?? 'Someone'} commented on your product.`,
+				notificationTitle: 'New FAQ',
+				notificationDesc: 'A new FAQ entry has been published.',
 				authorId: user._id,
+				receiverId: user._id,
 			});
 		} catch (err) {
 			console.error('FAQ submission failed:', err);

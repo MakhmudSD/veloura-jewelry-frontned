@@ -78,9 +78,7 @@ const ProductList: NextPage = ({ initialInput, ...props }: any) => {
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {
 			await createNotification({ variables: { input } });
-		} catch (e) {
-			console.warn('notifyMember failed', e);
-		}
+		} catch (_e) {}
 	};
 
 	const likeProductHandler = async (user: T, id: string) => {
@@ -104,20 +102,20 @@ const ProductList: NextPage = ({ initialInput, ...props }: any) => {
 			}
 
 			if (!id) return;
-			await likeTargetProduct({ variables: { input: id } }); // Server update
+			const product = products?.find((p: Product) => p._id === id);
+			await likeTargetProduct({ variables: { input: id } });
 			await getProductsRefetch({ input: searchFilter });
-			if (id !== user._id) {
+			if (product?.memberData?._id && product.memberData._id !== user._id) {
 				void notifyMember({
 					notificationType: NotificationType.LIKE,
 					notificationGroup: NotificationGroup.PRODUCT,
 					notificationTitle: 'New like',
 					notificationDesc: `${user.memberNick ?? 'Someone'} liked your product.`,
 					authorId: user._id,
+					receiverId: product.memberData._id,
 				});
 			}
-		} catch (err: any) {
-			console.error('ERROR on likeProductHandler', err.message);
-		}
+		} catch (_err: any) {}
 	};
 
 	/** Sync router + refetch products when searchFilter changes **/
