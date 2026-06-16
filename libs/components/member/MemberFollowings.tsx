@@ -53,12 +53,14 @@ const MemberFollowings = (props: MemberFollowingsProps) => {
     variables: { input: followInquiry },
     skip: !followInquiry?.search?.followerId,
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data: T) => {
-      const list = data?.getMemberFollowings?.list || [];
-      setMemberFollowings(dedupeFollowings(list));
-      setTotal(data?.getMemberFollowings?.metaCounter?.[0]?.total ?? list.length);
-    },
   });
+
+  useEffect(() => {
+    if (!getMemberFollowingsData) return;
+    const list = getMemberFollowingsData?.getMemberFollowings?.list || [];
+    setMemberFollowings(dedupeFollowings(list));
+    setTotal(getMemberFollowingsData?.getMemberFollowings?.metaCounter?.[0]?.total ?? list.length);
+  }, [getMemberFollowingsData]);
 
   useEffect(() => {
     const targetId = (router.query.memberId as string) || (user?._id as string) || '';

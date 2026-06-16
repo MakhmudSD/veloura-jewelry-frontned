@@ -51,9 +51,6 @@ const TrendProducts = (props: TrendProductsProps) => {
     fetchPolicy: 'cache-and-network',
     variables: { input: initialInput },
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {
-      setTrendProducts(data?.getProducts?.list ?? []);
-    },
   });
 
   useEffect(() => {

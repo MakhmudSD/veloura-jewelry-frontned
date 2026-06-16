@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Stack, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -45,14 +45,11 @@ const TopStores = (props: TopStoresProps) => {
 		fetchPolicy: 'cache-and-network',
 		variables: { input: initialInput },
 		notifyOnNetworkStatusChange: true,
-		onCompleted: (data) => {
-			// console.log('✅ getStoresData:', data);
-			setTopStores(data?.getStores?.list ?? []);
-		},
-		onError: (error) => {
-			console.error('❌ getStoresError:', error);
-		},
 	});
+
+	useEffect(() => {
+		if (getStoresData?.getStores?.list) setTopStores(getStoresData.getStores.list);
+	}, [getStoresData]);
 
 	/** HANDLERS **/
 	const likeMemberHandler = async (_store: Member, id: string) => {

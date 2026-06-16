@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Stack, Typography, Box, List, ListItem, Button } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -20,6 +20,7 @@ const MemberMenu = (props: MemberMenuProps) => {
 	const router = useRouter();
 	const category: any = router.query?.category;
 	const [member, setMember] = useState<Member | null>(null);
+	const [optimisticFollowing, setOptimisticFollowing] = useState<boolean | null>(null);
 	const { memberId } = router.query;
 
 	/** APOLLO REQUESTS **/
@@ -30,14 +31,16 @@ const MemberMenu = (props: MemberMenuProps) => {
 		refetch: getMemberRefetch,
 	} = useQuery(GET_MEMBER, {
 		fetchPolicy: 'network-only',
-		variables: {
-			input: memberId,
-		},
+		variables: { input: memberId },
 		notifyOnNetworkStatusChange: true,
-		onCompleted: (data: T) => {
-			setMember(data?.getMember);
-		},
 	});
+
+	useEffect(() => {
+		if (getMemberData?.getMember) {
+			setMember(getMemberData.getMember);
+			setOptimisticFollowing(null); // let server truth take over after refetch
+		}
+	}, [getMemberData]);
 
 	if (device === 'mobile') {
 		return <div>MEMBER MENU MOBILE</div>;
@@ -61,26 +64,45 @@ const MemberMenu = (props: MemberMenuProps) => {
 					</Stack>
 				</Stack>
 				<Stack className="follow-button-box">
-					{member?.meFollowed && member?.meFollowed[0]?.myFollowing ? (
-						<>
+					{(() => {
+						const serverFollowing = !!(member?.meFollowed && member?.meFollowed[0]?.myFollowing);
+						const isFollowing = optimisticFollowing !== null ? optimisticFollowing : serverFollowing;
+						return isFollowing ? (
+							<>
+								<Button
+									variant="outlined"
+									sx={{
+										borderColor: '#c0392b',
+										color: '#c0392b',
+										':hover': { background: 'rgba(192,57,43,0.08)', borderColor: '#c0392b' },
+									}}
+									onClick={() => {
+										setOptimisticFollowing(false);
+										unsubscribeHandler(member?._id, getMemberRefetch, memberId);
+									}}
+								>
+									Unfollow
+								</Button>
+								<Typography>Following</Typography>
+							</>
+						) : (
 							<Button
-								variant="outlined"
-								sx={{ background: '#b9b9b9' }}
-								onClick={() => unsubscribeHandler(member?._id, getMemberRefetch, memberId)}
+								variant="contained"
+								sx={{
+									background: 'linear-gradient(135deg, #c8872a, #d4af37)',
+									color: '#fff',
+									':hover': { background: 'linear-gradient(135deg, #b07520, #c9a030)' },
+									boxShadow: '0 2px 8px rgba(200,135,42,0.3)',
+								}}
+								onClick={() => {
+									setOptimisticFollowing(true);
+									subscribeHandler(member?._id, getMemberRefetch, memberId);
+								}}
 							>
-								Unfollow
+								Follow
 							</Button>
-							<Typography>Following</Typography>
-						</>
-					) : (
-						<Button
-							variant="contained"
-							sx={{ background: '#ff5d18', ':hover': { background: '#ff5d18' } }}
-							onClick={() => subscribeHandler(member?._id, getMemberRefetch, memberId)}
-						>
-							Follow
-						</Button>
-					)}
+						);
+					})()}
 				</Stack>
 				<Stack className={'sections'}>
 					<Stack className={'section'}>

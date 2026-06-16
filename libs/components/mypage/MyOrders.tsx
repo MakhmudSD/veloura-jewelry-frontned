@@ -64,10 +64,13 @@ const MyOrders: NextPage = ({ initialInput }: any) => {
     fetchPolicy: 'network-only',
     variables: { input: searchFilter },
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data: T) => {
-      setOrders(data?.getMyOrders ?? []);
-    },
   });
+
+  useEffect(() => {
+    if (getOrdersData?.getMyOrders) {
+      setOrders(getOrdersData.getMyOrders);
+    }
+  }, [getOrdersData]);
 
   /** HANDLERS **/
   const paginationHandler = (e: T, value: number) => {

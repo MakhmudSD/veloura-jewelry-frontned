@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { Pagination, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
@@ -34,12 +34,14 @@ const MyProducts: NextPage = ({ initialInput, ...props }: any) => {
 		fetchPolicy: 'network-only',
 		variables: { input: searchFilter },
 		notifyOnNetworkStatusChange: true,
-		onCompleted: (data: T) => {
-			console.log('Data fetched:', data);
-			setStoreProducts(data?.getStoreProducts?.list); // Create a new array to force re-render
-			setTotal(data?.getStoreProducts?.metaCounter[0]?.total ?? 0);
-		},
 	});
+
+	useEffect(() => {
+		if (getStoreProductsData?.getStoreProducts?.list) {
+			setStoreProducts(getStoreProductsData.getStoreProducts.list);
+			setTotal(getStoreProductsData.getStoreProducts.metaCounter?.[0]?.total ?? 0);
+		}
+	}, [getStoreProductsData]);
 
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {

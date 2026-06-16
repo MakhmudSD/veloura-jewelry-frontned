@@ -66,10 +66,15 @@ export const topProductRank = 2
 export const calculateStars = (comments: number, likes: number, views: number) =>
 	Math.min(5, (comments + likes + views) / 3);
 
-/** Resolve an image path from the DB — absolute URLs pass through unchanged,
- *  relative paths (locally uploaded files) are prefixed with the API origin. */
+/** Resolve an image path from the DB — replaces any localhost origin with the
+ *  production API URL so dev-uploaded images render correctly in production. */
 export const resolveImageUrl = (path: string | undefined | null, fallback = ''): string => {
   if (!path) return fallback;
-  if (path.startsWith('/') || path.startsWith('http')) return path;
-  return `${REACT_APP_API_URL.replace(/\/+$/, '')}/${path}`;
+  const base = REACT_APP_API_URL.replace(/\/+$/, '');
+  if (path.startsWith('http')) {
+    // Replace any localhost:<port> origin with the real API origin
+    return path.replace(/https?:\/\/localhost:\d+/, base);
+  }
+  if (path.startsWith('/')) return path;
+  return `${base}/${path}`;
 };

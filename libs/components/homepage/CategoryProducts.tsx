@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack, Button, Typography, Box } from '@mui/material';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -47,10 +47,11 @@ const CategoryProducts = (props: CategoryProductsProps) => {
     fetchPolicy: 'cache-and-network',
     variables: { input: initialInput },
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data: T) => {
-      setCategoryProducts(data?.getProducts?.list);
-    },
   });
+
+  useEffect(() => {
+    if (getProductsData?.getProducts?.list) setCategoryProducts(getProductsData.getProducts.list);
+  }, [getProductsData]);
 
   /** HANDLERS **/
   const filteredProducts = selectedCategory

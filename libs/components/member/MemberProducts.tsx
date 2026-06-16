@@ -29,13 +29,16 @@ const MyProducts: NextPage = ({ initialInput, ...props }: any) => {
 		variables: { input: searchFilter },
 		skip: !searchFilter?.search?.memberId,
 		notifyOnNetworkStatusChange: true,
-		onCompleted: (data: T) => {
-			setStoreProducts(data?.getProducts?.list);
-			setTotal(data?.getProducts?.metaCounter[0]?.total ?? 0);
-		},
 	});
 
 	/** LIFECYCLES **/
+	useEffect(() => {
+		if (getProductsData?.getProducts?.list) {
+			setStoreProducts(getProductsData.getProducts.list);
+			setTotal(getProductsData.getProducts.metaCounter?.[0]?.total ?? 0);
+		}
+	}, [getProductsData]);
+
 	useEffect(() => {
 		getProductsRefetch().then();
 	}, [searchFilter]);

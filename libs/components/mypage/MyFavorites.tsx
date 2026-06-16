@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Pagination, Stack, Typography } from '@mui/material';
@@ -31,11 +31,14 @@ const MyFavorites: NextPage = () => {
 	} = useQuery(GET_FAVORITES, {
 		fetchPolicy: 'network-only',
 		variables: { input: searchFavorites },
-		onCompleted: (data: T) => {
-			setMyFavorites(data.getFavorites?.list);
-			setTotal(data.getFavorites?.metaCounter?.[0]?.total || 0);
-		},
 	});
+
+	useEffect(() => {
+		if (getFavoritesData?.getFavorites?.list) {
+			setMyFavorites(getFavoritesData.getFavorites.list);
+			setTotal(getFavoritesData.getFavorites.metaCounter?.[0]?.total || 0);
+		}
+	}, [getFavoritesData]);
 
 	const notifyMember = async (input: CreateNotificationInput) => {
 		try {

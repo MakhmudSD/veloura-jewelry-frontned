@@ -100,18 +100,19 @@ const NotificationBell: React.FC = () => {
 	const listBoxRef = useRef<HTMLDivElement | null>(null);
 
 	/** APOLLO REQUESTS **/
-	const { loading, fetchMore, refetch } = useQuery<GetNotificationsData, GetNotificationsVars>(GET_NOTIFICATIONS, {
+	const { loading, data: getNotificationsData, fetchMore, refetch } = useQuery<GetNotificationsData, GetNotificationsVars>(GET_NOTIFICATIONS, {
 		variables: { input: { page: 1, limit: PAGE_LIMIT } },
 		skip: !user?._id,
 		fetchPolicy: 'cache-and-network',
 		notifyOnNetworkStatusChange: true,
-		onCompleted: (d) => {
-			if (!d?.getNotifications) return;
-			setPage(1);
-			setItems(d.getNotifications.list);
-			setTotal(d.getNotifications.total ?? 0);
-		},
 	});
+
+	useEffect(() => {
+		if (!getNotificationsData?.getNotifications) return;
+		setPage(1);
+		setItems(getNotificationsData.getNotifications.list);
+		setTotal(getNotificationsData.getNotifications.total ?? 0);
+	}, [getNotificationsData]);
 
 	const [markOne, { loading: markingOne }] = useMutation<MarkNotificationReadData, MarkNotificationReadVars>(
 		MARK_NOTIFICATION_READ,

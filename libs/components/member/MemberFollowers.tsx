@@ -55,14 +55,14 @@ const MemberFollowers = (props: MemberFollowsProps) => {
     variables: { input: followInquiry },
     skip: !followInquiry?.search?.followingId,
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data: T) => {
-      // Always dedupe what we render
-      const list = data?.getMemberFollowers?.list || [];
-      setMemberFollowers(dedupeFollowers(list));
-      setTotal(data?.getMemberFollowers?.metaCounter?.[0]?.total ?? list.length);
-      // console.log('Followers Data:', data); // noisy in prod
-    },
   });
+
+  useEffect(() => {
+    if (!getMemberFollowersData) return;
+    const list = getMemberFollowersData?.getMemberFollowers?.list || [];
+    setMemberFollowers(dedupeFollowers(list));
+    setTotal(getMemberFollowersData?.getMemberFollowers?.metaCounter?.[0]?.total ?? list.length);
+  }, [getMemberFollowersData]);
 
   /** LIFECYCLES **/
   useEffect(() => {

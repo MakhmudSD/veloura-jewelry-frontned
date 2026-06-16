@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Pagination, Stack, Typography } from '@mui/material';
@@ -37,11 +37,14 @@ const MyArticles: NextPage = ({ initialInput, ...props }: T) => {
 		fetchPolicy: 'network-only',
 		variables: { input: searchCommunity },
 		notifyOnNetworkStatusChange: true,
-		onCompleted: (data: T) => {
-			setBoardArticles(data.getBoardArticles?.list);
-			setTotalCount(data.getBoardArticles?.metaCounter?.[0]?.total || 0);
-		},
 	});
+
+	useEffect(() => {
+		if (getBoardArticlesData?.getBoardArticles?.list) {
+			setBoardArticles(getBoardArticlesData.getBoardArticles.list);
+			setTotalCount(getBoardArticlesData.getBoardArticles.metaCounter?.[0]?.total || 0);
+		}
+	}, [getBoardArticlesData]);
 
 	/** HANDLERS **/
 	const paginationHandler = (e: T, value: number) => {

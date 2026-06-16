@@ -36,15 +36,18 @@ const CommunityBoards = () => {
       },
     },
     notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {
-      setArticles(data?.getBoardArticles?.list || []);
-      setLoading(false); 
-    },
-    onError: (error) => {
-      console.error('Error fetching articles:', error);
-      setLoading(false); 
-    },
   });
+
+  useEffect(() => {
+    if (getArticlesData?.getBoardArticles?.list) {
+      setArticles(getArticlesData.getBoardArticles.list);
+      setLoading(false);
+    }
+  }, [getArticlesData]);
+
+  useEffect(() => {
+    if (!getArticlesLoading && getArticlesData === undefined) setLoading(false);
+  }, [getArticlesLoading, getArticlesData]);
 
   useEffect(() => {
     getArticlesRefetch();
